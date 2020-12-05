@@ -8,7 +8,7 @@
 (defn parse-input [file-name]
   (map edn/read-string (line-seq (io/reader file-name))))
 
-(def input-part-1 (parse-input "src/advent_of_code_2020/day_01_part_1_input.txt"))
+(def input (parse-input "src/advent_of_code_2020/day_01_input.txt"))
 
 (defn find-2-expenses [target longs]
   (let [asc (sort longs), desc (reverse asc)]
@@ -23,7 +23,7 @@
 (defn answer-part-1 [input]
   (apply * (find-2-expenses 2020 input)))
 
-(def part-1-answer (answer-part-1 input-part-1))
+(def part-1-answer (answer-part-1 input))
 
 (comment
   part-1-answer
@@ -33,12 +33,10 @@
 
 ;;; Part 2
 
-(def input-part-2 input-part-1)
-
 (defn answer-part-2 [input]
   (some (fn [[a & input]] (some->> input (find-2-expenses (- 2020 a)) (apply * a))) (iterate next input)))
 
-(def part-2-answer (answer-part-2 input-part-2))
+(def part-2-answer (answer-part-2 input))
 
 (comment
   part-2-answer

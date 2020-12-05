@@ -14,12 +14,12 @@
                   (into {}))))
        (string/split (slurp file-name) #"\n\n")))
 
-(def input-part-1 (parse-input "src/advent_of_code_2020/day_04_part_1_input.txt"))
+(def input (parse-input "src/advent_of_code_2020/day_04_input.txt"))
 
 (defn answer-part-1 [input]
   (count (filter #(set/superset? (into #{} (keys %)) #{"byr" "iyr" "eyr" "hgt" "hcl" "ecl" "pid"}) input)))
 
-(def part-1-answer (answer-part-1 input-part-1))
+(def part-1-answer (answer-part-1 input))
 
 (comment
   part-1-answer
@@ -28,8 +28,6 @@
 
 
 ;;; Part 2
-
-(def input-part-2 input-part-1)
 
 (defn year-validator [minimum maximum]
   #(when-let [year (re-matches #"\d{4}" %)]
@@ -51,7 +49,7 @@
 (defn answer-part-2 [input]
   (count (filter (fn [passport] (every? (fn [[k validate]] (some-> k passport validate)) validators)) input)))
 
-(def part-2-answer (answer-part-2 input-part-2))
+(def part-2-answer (answer-part-2 input))
 
 (comment
   part-2-answer

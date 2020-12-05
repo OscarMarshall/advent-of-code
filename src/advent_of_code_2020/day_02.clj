@@ -12,13 +12,13 @@
                      [(edn/read-string a) (edn/read-string b) (first character) password])))
         (line-seq (io/reader file-name))))
 
-(def input-part-1 (parse-input "src/advent_of_code_2020/day_02_part_1_input.txt"))
+(def input (parse-input "src/advent_of_code_2020/day_02_input.txt"))
 
 (defn answer-part-1 [input]
   (count (filter (fn [[minimum maximum character password]] (<= minimum (count (filter #{character} password)) maximum))
                  input)))
 
-(def part-1-answer (answer-part-1 input-part-1))
+(def part-1-answer (answer-part-1 input))
 
 (comment
   part-1-answer
@@ -26,8 +26,6 @@
   )
 
 ;;; Part 2
-
-(def input-part-2 input-part-1)
 
 (defn answer-part-2 [input]
   (count (filter (fn [[posn1 posn2 character password]]
@@ -37,7 +35,7 @@
                      (and (posn-chars character) (= (count posn-chars) 2))))
                  input)))
 
-(def part-2-answer (answer-part-2 input-part-2))
+(def part-2-answer (answer-part-2 input))
 
 (comment
   part-2-answer
