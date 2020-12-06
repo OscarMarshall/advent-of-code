@@ -1,20 +1,26 @@
 (ns advent-of-code-2020.day-06
-  (:require [clojure.set :as set]
+  (:require [advent-of-code-2020.core :as core]
+            [clojure.set :as set]
             [clojure.string :as string]))
 
 ;;; Part 1
 ;;; ============================================================================
 
+(def input (core/get-input))
+
 (defn parse-input [file-name]
   (map (comp (partial map set) string/split-lines)
        (string/split (slurp file-name) #"\n\n")))
 
-(def input (parse-input "src/advent_of_code_2020/day_06_input.txt"))
+(def parsed-input (parse-input "src/advent_of_code_2020/day_06_input.txt"))
 
-(defn answer-part-1 [input]
-  (transduce (map (fn [group] (count (apply set/union group)))) + input))
+(defn reduce-groups [reduce-members parsed-input]
+  (transduce (map (comp count reduce-members)) + parsed-input))
 
-(def part-1-answer (answer-part-1 input))
+(defn answer-part-1 [parsed-input]
+  (reduce-groups (partial apply set/union) parsed-input))
+
+(def part-1-answer (answer-part-1 parsed-input))
 
 (comment
   part-1-answer
@@ -24,10 +30,10 @@
 ;;; Part 2
 ;;; ============================================================================
 
-(defn answer-part-2 [input]
-  (transduce (map (fn [group] (count (apply set/intersection group)))) + input))
+(defn answer-part-2 [parsed-input]
+  (reduce-groups (partial apply set/intersection) parsed-input))
 
-(def part-2-answer (answer-part-2 input))
+(def part-2-answer (answer-part-2 parsed-input))
 
 (comment
   part-2-answer

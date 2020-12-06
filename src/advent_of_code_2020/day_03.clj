@@ -1,28 +1,31 @@
 (ns advent-of-code-2020.day-03
-  (:require [clojure.string :as string]))
+  (:require [advent-of-code-2020.core :as core]
+            [clojure.string :as string]))
 
 ;;; Part 1
 ;;; ============================================================================
 
-(defn parse-input [file-name]
-  (vec (string/split-lines (slurp file-name))))
+(def input (core/get-input))
 
-(def input (parse-input "src/advent_of_code_2020/day_03_input.txt"))
+(defn parse-input [input]
+  (vec (string/split-lines input)))
 
-(defn check-slope [input right down]
-  (let [width (count (first input))
+(def parsed-input (parse-input input))
+
+(defn check-slope [parsed-input right down]
+  (let [width (count (first parsed-input))
         posns (map vector
                    (iterate #(+ % down) 0)
                    (map #(mod % width) (iterate #(+ % right) 0)))]
     (count (into []
-                 (comp (map (partial get-in input))
+                 (comp (map (partial get-in parsed-input))
                        (take-while some?)
                        (filter #{\#}))
                  posns))))
 
-(defn answer-part-1 [input] (check-slope input 3 1))
+(defn answer-part-1 [parsed-input] (check-slope parsed-input 3 1))
 
-(def part-1-answer (answer-part-1 input))
+(def part-1-answer (answer-part-1 parsed-input))
 
 (comment
   part-1-answer
@@ -34,10 +37,10 @@
 
 (def slopes [[1 1] [3 1] [5 1] [7 1] [1 2]])
 
-(defn answer-part-2 [input]
-  (apply * (map (partial apply check-slope input) slopes)))
+(defn answer-part-2 [parsed-input]
+  (apply * (map (partial apply check-slope parsed-input) slopes)))
 
-(def part-2-answer (answer-part-2 input))
+(def part-2-answer (answer-part-2 parsed-input))
 
 (comment
   part-2-answer

@@ -1,25 +1,28 @@
 (ns advent-of-code-2020.day-02
-  (:require [clojure.string :as string]))
+  (:require [advent-of-code-2020.core :as core]
+            [clojure.string :as string]))
 
 ;;; Part 1
 ;;; ============================================================================
 
-(defn parse-input [file-name]
+(def input (core/get-input))
+
+(defn parse-input [input]
   (into []
         (comp (map (partial re-matches #"(\d+)-(\d+) (.): (.*)"))
               (map (fn [[_ a b character password]]
                      [(Long/parseLong a) (Long/parseLong b) (first character)
                       password])))
-        (string/split-lines (slurp file-name))))
+        (string/split-lines input)))
 
-(def input (parse-input "src/advent_of_code_2020/day_02_input.txt"))
+(def parsed-input (parse-input input))
 
-(defn answer-part-1 [input]
+(defn answer-part-1 [parsed-input]
   (count (filter (fn [[minimum maximum character password]]
                    (<= minimum (count (filter #{character} password)) maximum))
-                 input)))
+                 parsed-input)))
 
-(def part-1-answer (answer-part-1 input))
+(def part-1-answer (answer-part-1 parsed-input))
 
 (comment
   part-1-answer
@@ -29,16 +32,16 @@
 ;;; Part 2
 ;;; ============================================================================
 
-(defn answer-part-2 [input]
+(defn answer-part-2 [parsed-input]
   (count (filter (fn [[posn1 posn2 character password]]
                    (let [posn-chars (into #{}
                                           (comp (map dec)
                                                 (map (partial nth password)))
                                           [posn1 posn2])]
                      (and (posn-chars character) (= (count posn-chars) 2))))
-                 input)))
+                 parsed-input)))
 
-(def part-2-answer (answer-part-2 input))
+(def part-2-answer (answer-part-2 parsed-input))
 
 (comment
   part-2-answer

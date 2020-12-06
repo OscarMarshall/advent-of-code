@@ -1,13 +1,16 @@
 (ns advent-of-code-2020.day-01
-  (:require [clojure.string :as string]))
+  (:require [advent-of-code-2020.core :as core]
+            [clojure.string :as string]))
 
 ;;; Part 1
 ;;; ============================================================================
 
-(defn parse-input [file-name]
-  (map #(Long/parseLong %) (string/split-lines (slurp file-name))))
+(def input (core/get-input))
 
-(def input (parse-input "src/advent_of_code_2020/day_01_input.txt"))
+(defn parse-input [input]
+  (map #(Long/parseLong %) (string/split-lines input)))
+
+(def parsed-input (parse-input input))
 
 (def target 2020)
 
@@ -21,10 +24,10 @@
             (< sum target) (recur (rest asc) desc)
             (> sum target) (recur asc (rest desc))))))))
 
-(defn answer-part-1 [input]
-  (apply * (find-2-expenses target input)))
+(defn answer-part-1 [parsed-input]
+  (apply * (find-2-expenses target parsed-input)))
 
-(def part-1-answer (answer-part-1 input))
+(def part-1-answer (answer-part-1 parsed-input))
 
 (comment
   part-1-answer
@@ -34,12 +37,12 @@
 ;;; Part 2
 ;;; ============================================================================
 
-(defn answer-part-2 [input]
-  (some (fn [[a & input]]
-          (some->> input (find-2-expenses (- target a)) (apply * a)))
-        (iterate next input)))
+(defn answer-part-2 [parsed-input]
+  (some (fn [[a & more]]
+          (some->> more (find-2-expenses (- target a)) (apply * a)))
+        (iterate next parsed-input)))
 
-(def part-2-answer (answer-part-2 input))
+(def part-2-answer (answer-part-2 parsed-input))
 
 (comment
   part-2-answer

@@ -1,25 +1,28 @@
 (ns advent-of-code-2020.day-04
-  (:require [clojure.set :as set]
+  (:require [advent-of-code-2020.core :as core]
+            [clojure.set :as set]
             [clojure.string :as string]))
 
 ;;; Part 1
 ;;; ============================================================================
 
-(defn parse-input [file-name]
+(def input (core/get-input))
+
+(defn parse-input [input]
   (map (fn [passport]
          (into {}
                (map #(string/split % #":"))
                (string/split passport #"[ \n]")))
-       (string/split (slurp file-name) #"\n\n")))
+       (string/split input #"\n\n")))
 
-(def input (parse-input "src/advent_of_code_2020/day_04_input.txt"))
+(def parsed-input (parse-input input))
 
 (def required-fields #{"byr" "iyr" "eyr" "hgt" "hcl" "ecl" "pid"})
 
-(defn answer-part-1 [input]
-  (count (filter #(set/superset? (into #{} (keys %)) required-fields) input)))
+(defn answer-part-1 [parsed-input]
+  (count (filter #(set/superset? (into #{} (keys %)) required-fields) parsed-input)))
 
-(def part-1-answer (answer-part-1 input))
+(def part-1-answer (answer-part-1 parsed-input))
 
 (comment
   part-1-answer
@@ -46,13 +49,13 @@
    "ecl" #{"amb" "blu" "brn" "gry" "grn" "hzl" "oth"}
    "pid" (partial re-matches #"[0-9]{9}")})
 
-(defn answer-part-2 [input]
+(defn answer-part-2 [parsed-input]
   (count (filter (fn [passport]
                    (every? (fn [[k validate]]
                              (some-> k passport validate)) validators))
-                 input)))
+                 parsed-input)))
 
-(def part-2-answer (answer-part-2 input))
+(def part-2-answer (answer-part-2 parsed-input))
 
 (comment
   part-2-answer
