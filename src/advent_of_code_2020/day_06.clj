@@ -1,12 +1,13 @@
 (ns advent-of-code-2020.day-06
-  (:require [clojure.string :as string]
-            [clojure.set :as set]))
-
+  (:require [clojure.set :as set]
+            [clojure.string :as string]))
 
 ;;; Part 1
+;;; ============================================================================
 
 (defn parse-input [file-name]
-  (map (comp (partial map set) string/split-lines) (string/split (slurp file-name) #"\n\n")))
+  (map (comp (partial map set) string/split-lines)
+       (string/split (slurp file-name) #"\n\n")))
 
 (def input (parse-input "src/advent_of_code_2020/day_06_input.txt"))
 
@@ -20,8 +21,8 @@
   ;; => 6596
   )
 
-
 ;;; Part 2
+;;; ============================================================================
 
 (defn answer-part-2 [input]
   (transduce (map (fn [group] (count (apply set/intersection group)))) + input))
