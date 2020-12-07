@@ -52,7 +52,8 @@
 (defn answer-part-2 [parsed-input]
   (count (filter (fn [passport]
                    (every? (fn [[k validate]]
-                             (some-> k passport validate)) validators))
+                             (some-> k passport validate))
+                           validators))
                  parsed-input)))
 
 (def part-2-answer (answer-part-2 parsed-input))
