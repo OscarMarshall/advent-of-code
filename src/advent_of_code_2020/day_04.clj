@@ -20,7 +20,8 @@
 (def required-fields #{"byr" "iyr" "eyr" "hgt" "hcl" "ecl" "pid"})
 
 (defn answer-part-1 [parsed-input]
-  (count (filter #(set/superset? (into #{} (keys %)) required-fields) parsed-input)))
+  (count (filter #(set/superset? (into #{} (keys %)) required-fields)
+                 parsed-input)))
 
 (def part-1-answer (answer-part-1 parsed-input))
 
