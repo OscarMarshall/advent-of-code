@@ -42,7 +42,7 @@
 (defn answer-part-2 [parsed-input]
   (memory-game-nth-number parsed-input 30000000))
 
-(def part-2-answer (time (answer-part-2 parsed-input)))
+(def part-2-answer (answer-part-2 parsed-input))
 
 (comment
   part-2-answer
