@@ -51,7 +51,7 @@
                (some->> (determine-fields (dissoc remaining-fields field)
                                           field-values)
                         (cons field)))
-             (eduction (filter (fn [[_ valid?]] (every? valid? values)))
+             (eduction (filter (fn [[_ possible?]] (possible? values)))
                        (map key)
                        remaining-fields))
        ()))))
@@ -63,13 +63,20 @@
         (filter (partial every? (apply some-fn (vals fields))) nearby-tickets)
 
         field-values (apply map hash-set nearby-tickets)
-        field-order  (determine-fields fields field-values)]
+
+        field-order
+        (determine-fields (into {}
+                                (map (fn [[field valid?]]
+                                       [field
+                                        (memoize (partial every? valid?))]))
+                                fields)
+                          field-values)]
     (transduce (comp (filter (comp #(string/starts-with? % "departure") key))
                      (map val))
                *
                (zipmap field-order my-ticket))))
 
-(def part-2-answer (time (answer-part-2 parsed-input)))
+(def part-2-answer (answer-part-2 parsed-input))
 
 (comment
   part-2-answer
