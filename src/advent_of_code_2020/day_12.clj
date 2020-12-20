@@ -23,22 +23,17 @@
 
 (def parsed-input (parse-input input))
 
-(defmulti do-command (fn [_ [command _]] command))
-(defmethod do-command :north [state [_ n]]
-  (update state :north + n))
-(defmethod do-command :south [state [_ n]]
-  (update state :north - n))
-(defmethod do-command :east [state [_ n]]
-  (update state :east + n))
-(defmethod do-command :west [state [_ n]]
-  (update state :east - n))
 (def facing->direction [:east :north :west :south])
-(defmethod do-command :left [state [_ n]]
-  (update state :facing #(mod (+ % (/ n 90)) 4)))
-(defmethod do-command :right [state [_ n]]
-  (update state :facing #(mod (- % (/ n 90)) 4)))
-(defmethod do-command :forward [{:as state, :keys [facing]} [_ n]]
-  (do-command state [(facing->direction facing) n]))
+
+(defn do-command [{:keys [facing], :as state} [command n]]
+  (case command
+    :north   (update state :north + n)
+    :south   (update state :north - n)
+    :east    (update state :east + n)
+    :west    (update state :east - n)
+    :left    (update state :facing #(mod (+ % (/ n 90)) 4))
+    :right   (update state :facing #(mod (- % (/ n 90)) 4))
+    :forward (do-command state [(facing->direction facing) n])))
 
 (defn answer-part-1 [parsed-input]
   (let [{:keys [north east]} (reduce do-command
@@ -56,37 +51,28 @@
 ;;; Part 2
 ;;; ============================================================================
 
-(defmulti do-command2 (fn [_ [command _]] command))
-(defmethod do-command2 :north [state [_ n]]
-  (update state :waypoint-north + n))
-(defmethod do-command2 :south [state [_ n]]
-  (update state :waypoint-north - n))
-(defmethod do-command2 :east [state [_ n]]
-  (update state :waypoint-east + n))
-(defmethod do-command2 :west [state [_ n]]
-  (update state :waypoint-east - n))
-(defmethod do-command2 :left [{:as state, :keys [waypoint-east waypoint-north]}
-                              [_ n]]
-  (if (zero? n)
-    state
-    (recur (assoc state
-                  :waypoint-east (- waypoint-north)
-                  :waypoint-north waypoint-east)
-           [:left (- n 90)])))
-(defmethod do-command2 :right [{:as state, :keys [waypoint-east waypoint-north]}
-                              [_ n]]
-  (if (zero? n)
-    state
-    (recur (assoc state
-                  :waypoint-east waypoint-north
-                  :waypoint-north (- waypoint-east))
-           [:right (- n 90)])))
-(defmethod do-command2 :forward [{:as state, :keys [waypoint-east
-                                                    waypoint-north]}
-                                 [_ n]]
-  (-> state
-      (update :east + (* waypoint-east n))
-      (update :north + (* waypoint-north n))))
+(defn do-command2 [{:keys [waypoint-east waypoint-north], :as state}
+                   [command n]]
+  (case command
+    :north   (update state :waypoint-north + n)
+    :south   (update state :waypoint-north - n)
+    :east    (update state :waypoint-east + n)
+    :west    (update state :waypoint-east - n)
+    :left    (if (zero? n)
+               state
+               (recur (assoc state
+                             :waypoint-east (- waypoint-north)
+                             :waypoint-north waypoint-east)
+                      [:left (- n 90)]))
+    :right   (if (zero? n)
+               state
+               (recur (assoc state
+                             :waypoint-east waypoint-north
+                             :waypoint-north (- waypoint-east))
+                      [:right (- n 90)]))
+    :forward (-> state
+                 (update :east + (* waypoint-east n))
+                 (update :north + (* waypoint-north n)))))
 
 (defn answer-part-2 [parsed-input]
   (let [{:keys [north east]} (reduce do-command2
