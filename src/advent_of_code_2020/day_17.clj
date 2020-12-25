@@ -1,5 +1,6 @@
 (ns advent-of-code-2020.day-17
   (:require [advent-of-code-2020.core :as core]
+            [advent-of-code-2020.utils :as utils]
             [clojure.string :as string]))
 
 ;;; Part 1
@@ -29,24 +30,11 @@
 (defn neighbors [posn dimensions]
   (remove #{posn} (neighbors+self posn dimensions)))
 
-(defn execute-cycle [active-cubes dimensions]
-  (->> active-cubes
-       (reduce (fn [active-neighbors posn]
-                 (reduce (fn [active-neighbors posn]
-                           (update active-neighbors posn (fnil inc 0)))
-                         active-neighbors
-                         (neighbors posn dimensions)))
-               (zipmap active-cubes (repeat 0)))
-       (reduce (fn [next-active-cubes [posn active-neighbors]]
-                 (cond-> next-active-cubes
-                   (if (active-cubes posn)
-                     (<= 2 active-neighbors 3)
-                     (= active-neighbors 3))
-                   (conj posn)))
-               #{})))
+(defn execute-cycle-fn [dimensions]
+  (utils/conway-step-fn #(neighbors % dimensions) #{3} #{2 3}))
 
 (defn answer-part-1 [parsed-input]
-  (count (nth (iterate #(execute-cycle % 3)
+  (count (nth (iterate (execute-cycle-fn 3)
                        (parsed-input->active-cubes parsed-input 3))
               6)))
 
@@ -61,7 +49,7 @@
 ;;; ============================================================================
 
 (defn answer-part-2 [parsed-input]
-  (count (nth (iterate #(execute-cycle % 4)
+  (count (nth (iterate (execute-cycle-fn 4)
                        (parsed-input->active-cubes parsed-input 4))
               6)))
 

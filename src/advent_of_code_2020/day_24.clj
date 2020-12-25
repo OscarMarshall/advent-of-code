@@ -1,5 +1,6 @@
 (ns advent-of-code-2020.day-24
   (:require [advent-of-code-2020.core :as core]
+            [advent-of-code-2020.utils :as utils]
             [clojure.string :as string]))
 
 ;;; Part 1
@@ -47,21 +48,7 @@
 (defn neighbors [posn]
   (map (partial merge-with + posn) (vals direction->vector)))
 
-(defn next-day [black-tiles]
-  (->> black-tiles
-       (reduce (fn [black-neighbors posn]
-                 (reduce (fn [black-neighbors posn]
-                           (update black-neighbors posn (fnil inc 0)))
-                         black-neighbors
-                         (neighbors posn)))
-               (zipmap black-tiles (repeat 0)))
-       (reduce (fn [next-black-tiles [posn black-neighbors]]
-                 (cond-> next-black-tiles
-                   (if (black-tiles posn)
-                     (<= 1 black-neighbors 2)
-                     (= black-neighbors 2))
-                   (conj posn)))
-               #{})))
+(def next-day (utils/conway-step-fn neighbors #(= % 2) #(<= 1 % 2)))
 
 (defn answer-part-2 [parsed-input]
   (count (nth (iterate next-day (day-0-black-tiles parsed-input)) 100)))
