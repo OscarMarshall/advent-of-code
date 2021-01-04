@@ -2,4 +2,4 @@
   (:require [clojure.string :as string]))
 
 (defmacro get-input []
-  `(slurp ~(string/replace *file* ".clj" "_input.txt")))
+  `(slurp ~(string/replace *file* #"[a-z]?.clj" "_input.txt")))
