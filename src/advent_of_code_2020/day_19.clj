@@ -17,16 +17,12 @@
 
 (defn make-matcher [definition]
   (condp re-matches definition
-    #"\"(.)\""      :>> (fn [[_ character]]
-                          {:type  :char-matcher
-                           :value (first character)})
+    #"\"(.)\""      :>> (fn [[_ character]] (char-matcher (first character)))
     #"\d+(?: \d+)*" :>> (fn [xs]
-                          {:type  :cat-matcher
-                           :value (map #(Long/parseLong %)
-                                       (string/split xs #" "))})
+                          (apply cat-matcher (map #(Long/parseLong %)
+                                                  (string/split xs #" "))))
     #"(.*) \| (.*)" :>> (fn [[_ & a+b]]
-                          {:type  :or-matcher
-                           :value (map make-matcher a+b)})))
+                          (apply or-matcher (map make-matcher a+b)))))
 
 (defn parse-input [input]
   (let [[rules messages] (map string/split-lines (string/split input #"\n\n"))]
@@ -77,11 +73,11 @@
                                                c
                                                rules)))))
        :or-matcher    (let [[a b] value
-                            a (match a c rules)
-                            b (match b c rules)]
+                            a     (match a c rules)
+                            b     (match b c rules)]
                         (if (and a b)
-                          (loop [prefix []
-                                 matcher {:type :or-matcher, :value (list a b)}]
+                          (loop [prefix  []
+                                 matcher (or-matcher a b)]
                             (if-let [c (next-char matcher)]
                               (recur (conj prefix c) (match matcher c rules))
                               (if (seq prefix)
