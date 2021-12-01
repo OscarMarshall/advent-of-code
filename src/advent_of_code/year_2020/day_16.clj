@@ -1,9 +1,6 @@
-(ns advent-of-code-2020.day-16
+(ns advent-of-code.year-2020.day-16
   (:require [advent-of-code-2020.core :as core]
             [clojure.string :as string]))
-
-;;; Part 1
-;;; ============================================================================
 
 (def input (core/get-input))
 
@@ -15,6 +12,10 @@
 
 (defn parse-ticket [line]
   (map #(Long/parseLong %) (string/split line #",")))
+
+
+;;; Part 1
+;;; ============================================================================
 
 (defn parse-input [input]
   (let [[fields my-ticket nearby-tickets] (string/split input #"\n\n")]
@@ -35,10 +36,8 @@
 
 (def part-1-answer (answer-part-1 parsed-input))
 
-(comment
-  part-1-answer
-  ;; => 25059
-  )
+(assert (= part-1-answer 25059))
+
 
 ;;; Part 2
 ;;; ============================================================================
@@ -78,7 +77,4 @@
 
 (def part-2-answer (answer-part-2 parsed-input))
 
-(comment
-  part-2-answer
-  ;; => 3253972369789
-  )
+(assert (= part-2-answer 3253972369789))

@@ -1,9 +1,6 @@
-(ns advent-of-code-2020.day-02
+(ns advent-of-code.year-2020.day-02
   (:require [advent-of-code-2020.core :as core]
             [clojure.string :as string]))
-
-;;; Part 1
-;;; ============================================================================
 
 (def input (core/get-input))
 
@@ -17,6 +14,10 @@
 
 (def parsed-input (parse-input input))
 
+
+;;; Part 1
+;;; ============================================================================
+
 (defn answer-part-1 [parsed-input]
   (count (filter (fn [[minimum maximum character password]]
                    (<= minimum (count (filter #{character} password)) maximum))
@@ -24,10 +25,8 @@
 
 (def part-1-answer (answer-part-1 parsed-input))
 
-(comment
-  part-1-answer
-  ;; => 465
-  )
+(assert (= part-1-answer 465))
+
 
 ;;; Part 2
 ;;; ============================================================================
@@ -43,7 +42,4 @@
 
 (def part-2-answer (answer-part-2 parsed-input))
 
-(comment
-  part-2-answer
-  ;; => 294
-  )
+(assert (= part-2-answer 294))

@@ -1,9 +1,6 @@
-(ns advent-of-code-2020.day-15
+(ns advent-of-code.year-2020.day-15
   (:require [advent-of-code-2020.core :as core]
             [clojure.string :as string]))
-
-;;; Part 1
-;;; ============================================================================
 
 (def input (core/get-input))
 
@@ -11,6 +8,10 @@
   (map #(Long/parseLong %) (string/split input #",")))
 
 (def parsed-input (parse-input input))
+
+
+;;; Part 1
+;;; ============================================================================
 
 (defn make-sequence [start]
   (letfn [(next-number [prev prev-i state]
@@ -31,10 +32,8 @@
 
 (def part-1-answer (answer-part-1 parsed-input))
 
-(comment
-  part-1-answer
-  ;; => 1085
-  )
+(assert (= part-1-answer 1085))
+
 
 ;;; Part 2
 ;;; ============================================================================
@@ -44,7 +43,4 @@
 
 (def part-2-answer (answer-part-2 parsed-input))
 
-(comment
-  part-2-answer
-  ;; => 10652
-  )
+(assert (= part-2-answer 10652))

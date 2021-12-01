@@ -1,9 +1,6 @@
-(ns advent-of-code-2020.day-13
+(ns advent-of-code.year-2020.day-13
   (:require [advent-of-code-2020.core :as core]
             [clojure.string :as string]))
-
-;;; Part 1
-;;; ============================================================================
 
 (def input (core/get-input))
 
@@ -13,6 +10,10 @@
                                     (string/split buses #","))]))
 
 (def parsed-input (parse-input input))
+
+
+;;; Part 1
+;;; ============================================================================
 
 (defn answer-part-1 [parsed-input]
   (let [[earliest buses] parsed-input
@@ -34,10 +35,8 @@
 
 (def part-1-answer (answer-part-1 parsed-input))
 
-(comment
-  part-1-answer
-  ;; => 4938
-  )
+(assert (= part-1-answer 4938))
+
 
 ;;; Part 2
 ;;; ============================================================================
@@ -49,7 +48,6 @@
                 (remove (comp #{"x"} #(nth % 1))))
           (completing (fn [[period earliest] [i id]]
                         (loop [earliest (+ earliest i)]
-                          (prn earliest)
                           (if (zero? (mod earliest id))
                             [(* period id) (- earliest i)]
                             (recur (+ earliest period))))))
@@ -59,7 +57,4 @@
 
 (def part-2-answer (answer-part-2 parsed-input))
 
-(comment
-  part-2-answer
-  ;; => 230903629977901
-  )
+(assert (= part-2-answer 230903629977901))

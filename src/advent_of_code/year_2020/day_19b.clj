@@ -1,9 +1,6 @@
-(ns advent-of-code-2020.day-19b
+(ns advent-of-code.year-2020.day-19b
   (:require [advent-of-code-2020.core :as core]
             [clojure.string :as string]))
-
-;;; Part 1
-;;; ============================================================================
 
 (def input (core/get-input))
 
@@ -17,6 +14,10 @@
      :messages messages}))
 
 (def parsed-input (parse-input input))
+
+
+;;; Part 1
+;;; ============================================================================
 
 (defn rule->regex [rule rules]
   (if (int? rule)
@@ -37,12 +38,8 @@
 
 (def part-1-answer (answer-part-1 parsed-input))
 
-(comment
-  (print (rule->regex 0 (:rules parsed-input)))
+(assert (= part-1-answer 147))
 
-  part-1-answer
-  ;; => 147
-  )
 
 ;;; Part 2
 ;;; ============================================================================
@@ -68,7 +65,4 @@
 
 (def part-2-answer (answer-part-2 parsed-input))
 
-(comment
-  part-2-answer
-  ;; => 263
-  )
+(assert (= part-2-answer 263))

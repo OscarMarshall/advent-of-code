@@ -1,10 +1,7 @@
-(ns advent-of-code-2020.day-24
+(ns advent-of-code.year-2020.day-24
   (:require [advent-of-code-2020.core :as core]
             [advent-of-code-2020.utils :as utils]
             [clojure.string :as string]))
-
-;;; Part 1
-;;; ============================================================================
 
 (def input (core/get-input))
 
@@ -12,6 +9,10 @@
   (map (partial re-seq #"[ns]?[ew]") (string/split-lines input)))
 
 (def parsed-input (parse-input input))
+
+
+;;; Part 1
+;;; ============================================================================
 
 (def direction->vector
   {"e" {:east 1}
@@ -37,10 +38,8 @@
 
 (def part-1-answer (answer-part-1 parsed-input))
 
-(comment
-  part-1-answer
-  ;; => 382
-  )
+(assert (= part-1-answer 382))
+
 
 ;;; Part 2
 ;;; ============================================================================
@@ -55,7 +54,4 @@
 
 (def part-2-answer (answer-part-2 parsed-input))
 
-(comment
-  part-2-answer
-  ;; => 3964
-  )
+(assert (= part-2-answer 3964))

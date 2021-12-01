@@ -1,10 +1,7 @@
-(ns advent-of-code-2020.day-21
+(ns advent-of-code.year-2020.day-21
   (:require [advent-of-code-2020.core :as core]
             [clojure.set :as set]
             [clojure.string :as string]))
-
-;;; Part 1
-;;; ============================================================================
 
 (def input (core/get-input))
 
@@ -17,6 +14,10 @@
        (string/split-lines input)))
 
 (def parsed-input (parse-input input))
+
+
+;;; Part 1
+;;; ============================================================================
 
 (defn find-allergen-ingredients [foods]
   (let [all-allergens (apply set/union (map second foods))]
@@ -52,10 +53,8 @@
 
 (def part-1-answer (answer-part-1 parsed-input))
 
-(comment
-  part-1-answer
-  ;; => 2584
-  )
+(assert (= part-1-answer 2584))
+
 
 ;;; Part 2
 ;;; ============================================================================
@@ -69,7 +68,4 @@
 
 (def part-2-answer (answer-part-2 parsed-input))
 
-(comment
-  part-2-answer
-  ;; => "fqhpsl,zxncg,clzpsl,zbbnj,jkgbvlxh,dzqc,ppj,glzb"
-  )
+(assert (= part-2-answer "fqhpsl,zxncg,clzpsl,zbbnj,jkgbvlxh,dzqc,ppj,glzb"))

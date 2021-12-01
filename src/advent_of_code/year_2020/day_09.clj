@@ -1,9 +1,6 @@
-(ns advent-of-code-2020.day-09
+(ns advent-of-code.year-2020.day-09
   (:require [advent-of-code-2020.core :as core]
             [clojure.string :as string]))
-
-;;; Part 1
-;;; ============================================================================
 
 (def input (core/get-input))
 
@@ -11,6 +8,10 @@
   (map #(Long/parseLong %) (string/split-lines input)))
 
 (def parsed-input (parse-input input))
+
+
+;;; Part 1
+;;; ============================================================================
 
 (defn answer-part-1 [parsed-input]
   (let [[preamble message] (split-at 25 parsed-input)]
@@ -29,10 +30,8 @@
 
 (def part-1-answer (answer-part-1 parsed-input))
 
-(comment
-  part-1-answer
-  ;; => 41682220
-  )
+(assert (= part-1-answer 41682220))
+
 
 ;;; Part 2
 ;;; ============================================================================
@@ -50,7 +49,4 @@
 
 (def part-2-answer (answer-part-2 parsed-input))
 
-(comment
-  part-2-answer
-  ;; => 5388976
-  )
+(assert (= part-2-answer 5388976))

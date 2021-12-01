@@ -1,9 +1,8 @@
-(ns advent-of-code-2020.day-19
+(ns advent-of-code.year-2020.day-19
   (:require [advent-of-code-2020.core :as core]
             [clojure.string :as string]))
 
-;;; Part 1
-;;; ============================================================================
+(def input (core/get-input))
 
 (defn empty-matcher [] {:type :empty-matcher})
 (defn empty-matcher? [x] (boolean (some-> x :type (= :empty-matcher))))
@@ -13,8 +12,6 @@
 (defn or-matcher [& xs] {:type :or-matcher, :value xs})
 (defn or-matcher? [x] (boolean (some-> x :type (= :or-matcher))))
 
-(def input (core/get-input))
-
 (defn make-matcher [definition]
   (condp re-matches definition
     #"\"(.)\""      :>> (fn [[_ character]] (char-matcher (first character)))
@@ -23,7 +20,6 @@
                                                   (string/split xs #" "))))
     #"(.*) \| (.*)" :>> (fn [[_ & a+b]]
                           (apply or-matcher (map make-matcher a+b)))))
-
 (defn parse-input [input]
   (let [[rules messages] (map string/split-lines (string/split input #"\n\n"))]
     {:rules    (into {}
@@ -34,6 +30,10 @@
      :messages messages}))
 
 (def parsed-input (parse-input input))
+
+
+;;; Part 1
+;;; ============================================================================
 
 (defn matched? [{:keys [type value]}]
   (case type
@@ -110,10 +110,8 @@
 
 (def part-1-answer (answer-part-1 parsed-input))
 
-(comment
-  part-1-answer
-  ;; => 147
-  )
+(assert (= part-1-answer 147))
+
 
 ;;; Part 2
 ;;; ============================================================================
@@ -126,7 +124,4 @@
 
 (def part-2-answer (answer-part-2 parsed-input))
 
-(comment
-  part-2-answer
-  ;; => 263
-  )
+(assert (= part-2-answer 263))

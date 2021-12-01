@@ -1,9 +1,6 @@
-(ns advent-of-code-2020.day-18
+(ns advent-of-code.year-2020.day-18
   (:require [advent-of-code-2020.core :as core]
             [clojure.string :as string]))
-
-;;; Part 1
-;;; ============================================================================
 
 (def input (core/get-input))
 
@@ -20,6 +17,10 @@
        (string/split-lines input)))
 
 (def parsed-input (parse-input input))
+
+
+;;; Part 1
+;;; ============================================================================
 
 (defn apply-parens [tokens]
   (loop [[token & tokens] tokens, result []]
@@ -43,10 +44,8 @@
 
 (def part-1-answer (answer-part-1 parsed-input))
 
-(comment
-  part-1-answer
-  ;; => 45283905029161
-  )
+(assert (= part-1-answer 45283905029161))
+
 
 ;;; Part 2
 ;;; ============================================================================
@@ -66,7 +65,4 @@
 
 (def part-2-answer (answer-part-2 parsed-input))
 
-(comment
-  part-2-answer
-  ;; => 216975281211165
-  )
+(assert (= part-2-answer 216975281211165))

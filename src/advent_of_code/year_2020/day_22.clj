@@ -1,9 +1,6 @@
-(ns advent-of-code-2020.day-22
+(ns advent-of-code.year-2020.day-22
   (:require [advent-of-code-2020.core :as core]
             [clojure.string :as string]))
-
-;;; Part 1
-;;; ============================================================================
 
 (def input (core/get-input))
 
@@ -17,6 +14,10 @@
               (map rest)
               (map (partial into (queue) (map #(Long/parseLong %)))))
         (string/split input #"\n\n")))
+
+
+;;; Part 1
+;;; ============================================================================
 
 (def parsed-input (parse-input input))
 
@@ -46,10 +47,8 @@
 
 (def part-1-answer (answer-part-1 parsed-input))
 
-(comment
-  part-1-answer
-  ;; => 31957
-  )
+(assert (= part-1-answer 31957))
+
 
 ;;; Part 2
 ;;; ============================================================================
@@ -94,9 +93,6 @@
 (defn answer-part-2 [parsed-input]
   (calculate-score (second (apply play-game parsed-input))))
 
-(def part-2-answer (time (answer-part-2 parsed-input)))
+(def part-2-answer (answer-part-2 parsed-input))
 
-(comment
-  part-2-answer
-  ;; => 33212
-  )
+(assert (= part-2-answer 33212))

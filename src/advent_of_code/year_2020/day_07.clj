@@ -1,9 +1,6 @@
-(ns advent-of-code-2020.day-07
+(ns advent-of-code.year-2020.day-07
   (:require [advent-of-code-2020.core :as core]
             [clojure.string :as string]))
-
-;;; Part 1
-;;; ============================================================================
 
 (def input (core/get-input))
 
@@ -26,6 +23,10 @@
 
 (def parsed-input (parse-input input))
 
+
+;;; Part 1
+;;; ============================================================================
+
 (defn answer-part-1 [parsed-input]
   (let [inverted-map (apply merge-with
                             into
@@ -40,10 +41,8 @@
 
 (def part-1-answer (answer-part-1 parsed-input))
 
-(comment
-  part-1-answer
-  ;; => 119
-  )
+(assert (= part-1-answer 119))
+
 
 ;;; Part 2
 ;;; ============================================================================
@@ -61,7 +60,4 @@
 
 (def part-2-answer (answer-part-2 parsed-input))
 
-(comment
-  part-2-answer
-  ;; => 155802
-  )
+(assert (= part-2-answer 155802))
