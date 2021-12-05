@@ -1,4 +1,4 @@
-(ns advent-of-code.day-00
+(ns advent-of-code.year-2021.day-04
   (:require [advent-of-code.core :as core]
             [clojure.string :as string]
             [clojure.set :as set]))
