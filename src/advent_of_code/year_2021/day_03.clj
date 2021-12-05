@@ -13,17 +13,14 @@
 ;;; ============================================================================
 
 (defn rate [frequencies comparison]
-  (-> frequencies
-      (->> (map (fn [frequency]
-                  (if (comparison (frequency \0) (frequency \1)) \0 \1)))
-           (apply str))
-      (Long/parseLong 2)))
+  (Long/parseLong (apply str (map (fn [{zeros \0, ones \1}]
+                                    (if (comparison zeros ones) \0 \1))
+                                  frequencies))
+                  2))
 
 (defn answer-part-1 [parsed-input]
-  (let [frequencies  (map frequencies (apply map vector parsed-input))
-        gamma-rate   (rate frequencies >)
-        epsilon-rate (rate frequencies <)]
-    (* gamma-rate epsilon-rate)))
+  (let [frequencies  (map frequencies (apply map vector parsed-input))]
+    (* (rate frequencies >) (rate frequencies <))))
 
 (def part-1-answer (answer-part-1 parsed-input))
 
@@ -34,26 +31,24 @@
 ;;; ============================================================================
 
 (defn rating [numbers comparison]
-  (loop [numbers (set numbers), n 0]
-    (if (= (count numbers) 1)
-      (Long/parseLong (first numbers) 2)
-      (let [frequency (frequencies (map #(nth % n) numbers))
-            zeros     (frequency \0)
-            ones      (frequency \1)]
-        (recur (into #{}
-                     (filter (comp #{(if (if (= zeros ones)
-                                           (comparison 0 1)
-                                           (comparison zeros ones))
-                                       \0
-                                       \1)}
-                                   #(nth % n)))
-                     numbers)
-               (inc n))))))
+  (reduce (fn [numbers n]
+            (if (= (count numbers) 1)
+              (reduced (Long/parseLong (first numbers) 2))
+              (let [{zeros \0 ones \1} (frequencies (map #(nth % n) numbers))]
+                (into #{}
+                      (filter (fn [x]
+                                (#{(if (if (= zeros ones)
+                                         (comparison 0 1)
+                                         (comparison zeros ones))
+                                     \0
+                                     \1)}
+                                 (nth x n))))
+                      numbers))))
+          (set numbers)
+          (range (count numbers))))
 
 (defn answer-part-2 [parsed-input]
-  (let [oxygen-generator-rating (rating parsed-input >)
-        co2-scrubber-rating     (rating parsed-input <)]
-    (* oxygen-generator-rating co2-scrubber-rating)))
+  (* (rating parsed-input >) (rating parsed-input <)))
 
 (def part-2-answer (answer-part-2 parsed-input))
 

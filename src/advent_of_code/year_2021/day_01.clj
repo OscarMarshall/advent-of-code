@@ -13,7 +13,7 @@
 ;;; ============================================================================
 
 (defn answer-part-1 [parsed-input]
-  (count (filter (fn [[x y]] (< x y)) (partition 2 1 parsed-input))))
+  (count (filter (partial apply <) (partition 2 1 parsed-input))))
 
 (def part-1-answer (answer-part-1 parsed-input))
 
