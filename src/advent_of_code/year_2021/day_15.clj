@@ -62,6 +62,6 @@
                      [0 0]
                      (vec (repeat 2 (dec (* (count parsed-input) 5))))))
 
-(def part-2-answer (time (answer-part-2 parsed-input)))
+(def part-2-answer (answer-part-2 parsed-input))
 
 (assert (= part-2-answer 2851))

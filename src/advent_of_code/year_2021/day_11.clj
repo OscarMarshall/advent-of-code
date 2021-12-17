@@ -56,6 +56,6 @@
   (count (take-while (comp (partial not-every? #{0}) flatten)
                      (iterate step parsed-input))))
 
-(def part-2-answer (time (answer-part-2 parsed-input)))
+(def part-2-answer (answer-part-2 parsed-input))
 
 (assert (= part-2-answer 382))
