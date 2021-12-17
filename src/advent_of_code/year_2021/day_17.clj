@@ -41,8 +41,16 @@
 
 (def triangle-numbers (map triangle-number (range)))
 
-(defn triangle-number? [n]
-  (= (first (drop-while (partial > n) triangle-numbers)) n))
+(def n-triangle-number
+  (memoize
+   (fn [x]
+     (transduce (map-indexed vector)
+                (completing (fn [_ [i y]]
+                              (cond
+                                (= y x) (reduced i)
+                                (> y x) (reduced nil))))
+                nil
+                triangle-numbers))))
 
 (defn find-x-velocity [target steps]
   (assert (pos? target) "Negative x targets not implemented")
@@ -51,9 +59,8 @@
         (when (pos? drag-removed-target)
           (let [result (+ (/ drag-removed-target steps) drag-count)]
             (when (integer? result) result))))
-      (when (triangle-number? target)
-        (let [n (long (- (Math/sqrt (+ (* 2 target) 1/4)) 1/2))]
-          (when (>= steps n) n)))))
+      (when-let [n (n-triangle-number target)]
+        (when (<= n steps) n))))
 
 (defn find-y-velocity [target steps]
   (let [drag-count (dec steps)
