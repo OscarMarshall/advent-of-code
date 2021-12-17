@@ -1,5 +1,5 @@
 (ns advent-of-code.year-2020.day-19
-  (:require [advent-of-code-2020.core :as core]
+  (:require [advent-of-code.core :as core]
             [clojure.string :as string]))
 
 (def input (core/get-input))

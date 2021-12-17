@@ -1,5 +1,5 @@
 (ns advent-of-code.year-2020.day-20
-  (:require [advent-of-code-2020.core :as core]
+  (:require [advent-of-code.core :as core]
             [clojure.set :as set]
             [clojure.string :as string]))
 

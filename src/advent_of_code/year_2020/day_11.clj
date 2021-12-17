@@ -1,5 +1,5 @@
 (ns advent-of-code.year-2020.day-11
-  (:require [advent-of-code-2020.core :as core]
+  (:require [advent-of-code.core :as core]
             [clojure.string :as string]))
 
 (def input (core/get-input))
@@ -65,7 +65,7 @@
   (let [seat-graph (make-seat-graph parsed-input find-neighbors)]
     (count (filter :taken (vals (stable-state seat-graph step-seat))))))
 
-(def part-1-answer (time (answer-part-1 parsed-input)))
+(def part-1-answer (answer-part-1 parsed-input))
 
 (assert (= part-1-answer 2494))
 

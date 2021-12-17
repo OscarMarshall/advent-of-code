@@ -1,5 +1,5 @@
 (ns advent-of-code.year-2020.day-16
-  (:require [advent-of-code-2020.core :as core]
+  (:require [advent-of-code.core :as core]
             [clojure.string :as string]))
 
 (def input (core/get-input))
@@ -46,13 +46,14 @@
   (memoize
    (fn [remaining-fields [values & field-values]]
      (if values
-       (some (fn [field]
-               (some->> (determine-fields (dissoc remaining-fields field)
-                                          field-values)
-                        (cons field)))
-             (eduction (filter (fn [[_ possible?]] (possible? values)))
-                       (map key)
-                       remaining-fields))
+       (->> remaining-fields
+            (filter (fn [[_ possible?]] (possible? values)))
+            (map key)
+            (keep (fn [field]
+                    (some->> (determine-fields (dissoc remaining-fields field)
+                                               field-values)
+                             (cons field))))
+            first)
        ()))))
 
 (defn answer-part-2 [parsed-input]

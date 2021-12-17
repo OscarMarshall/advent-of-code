@@ -1,6 +1,6 @@
 (ns advent-of-code.year-2020.day-24
-  (:require [advent-of-code-2020.core :as core]
-            [advent-of-code-2020.utils :as utils]
+  (:require [advent-of-code.core :as core]
+            [advent-of-code.year-2020.utils :as utils]
             [clojure.string :as string]))
 
 (def input (core/get-input))

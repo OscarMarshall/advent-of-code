@@ -1,4 +1,4 @@
-(ns advent-of-code-2020.utils)
+(ns advent-of-code.year-2020.utils)
 
 (defn conway-step-fn [neighbors becomes-active? stays-active?]
   (fn [active]
