@@ -1,0 +1,9 @@
+{:lint-as {clojure.core.logic/defne clj-kondo.lint-as/def-catch-all
+           clojure.core.logic/matche clj-kondo.lint-as/def-catch-all
+           clojure.core.logic/run clj-kondo.lint-as/def-catch-all
+           clojure.core.logic/run* clj-kondo.lint-as/def-catch-all}
+ :linters {:redundant-fn-wrapper {:level :warning}
+           :single-key-in {:level :warning}
+           :unsorted-required-namespaces {:level :warning}
+           :used-underscored-binding {:level :warning}
+           :warn-on-reflection {:level :warning}}}
