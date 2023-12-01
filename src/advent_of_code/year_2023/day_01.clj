@@ -12,7 +12,7 @@
 ;;; Part 1
 ;;; ============================================================================
 
-(def numbers-regex #"^\d")
+(def number-regexes [#"\d" #"\d"])
 (def spelled-out->number
   {"one"   "1"
    "two"   "2"
@@ -23,29 +23,26 @@
    "seven" "7"
    "eight" "8"
    "nine"  "9"})
-(def spelled-out-numbers-regex
-  (re-pattern (str "^(?:\\d|"
-                   (string/join "|" (keys spelled-out->number))
-                   ")")))
+(def spelled-out-number-regexes
+  (let [inner-regex-string (string/join "|" (keys spelled-out->number))]
+    (mapv (fn [f] (re-pattern (str "\\d|" (f inner-regex-string))))
+          [identity string/reverse])))
 
-(defn find-numbers [s spelled-out]
-  (->> s
-       (iterate rest)
-       (take-while seq)
-       (keep (comp (partial re-find (if spelled-out
-                                      spelled-out-numbers-regex
-                                      numbers-regex))
-                   (partial apply str)))
-       (replace spelled-out->number)
-       (map parse-long)))
+(defn calibration-value [line spelled-out]
+  (let [[forward-regex backward-regex] (if spelled-out
+                                         spelled-out-number-regexes
+                                         number-regexes)]
+    (->> [(re-find forward-regex line)
+          (string/reverse (re-find backward-regex (string/reverse line)))]
+         (replace spelled-out->number)
+         string/join
+         parse-long)))
 
 (defn answer
   ([parsed-input] (answer parsed-input false))
   ([parsed-input spelled-out]
    (->> parsed-input
-        (map (fn [s]
-               (let [numbers (find-numbers s spelled-out)]
-                 (+ (* (first numbers) 10) (last numbers)))))
+        (map #(calibration-value % spelled-out))
         (apply +))))
 
 (defn answer-part-1 [parsed-input] (answer parsed-input))
