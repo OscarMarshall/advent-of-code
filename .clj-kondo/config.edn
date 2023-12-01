@@ -1,4 +1,5 @@
-{:lint-as {clojure.core.logic/defne clj-kondo.lint-as/def-catch-all
+{:hooks   {:analyze-call {clojure.core.logic.pldb/db-rel hooks.db-rel/db-rel}}
+ :lint-as {clojure.core.logic/defne clj-kondo.lint-as/def-catch-all
            clojure.core.logic/matche clj-kondo.lint-as/def-catch-all
            clojure.core.logic/run clj-kondo.lint-as/def-catch-all
            clojure.core.logic/run* clj-kondo.lint-as/def-catch-all}
