@@ -12,41 +12,24 @@
 ;;; Part 1
 ;;; ============================================================================
 
-(def number-regexes [#"\d" #"\d"])
-(def spelled-out->number
-  {"one"   "1"
-   "two"   "2"
-   "three" "3"
-   "four"  "4"
-   "five"  "5"
-   "six"   "6"
-   "seven" "7"
-   "eight" "8"
-   "nine"  "9"})
-(def spelled-out-number-regexes
-  (let [inner-regex-string (string/join "|" (keys spelled-out->number))]
-    (mapv (fn [f] (re-pattern (str "\\d|" (f inner-regex-string))))
-          [identity string/reverse])))
+(def digit->long (into {} (map (fn [n] [(str n) n])) (range 1 10)))
+(def digit-regex #"\d")
 
-(defn calibration-value [line spelled-out]
-  (let [[forward-regex backward-regex] (if spelled-out
-                                         spelled-out-number-regexes
-                                         number-regexes)]
-    (->> [(re-find forward-regex line)
-          (string/reverse (re-find backward-regex (string/reverse line)))]
-         (replace spelled-out->number)
-         string/join
-         parse-long)))
+(defn first-occurence [digits line]
+  (re-find (re-pattern (string/join "|" digits)) line))
 
-(defn answer
-  ([parsed-input] (answer parsed-input false))
-  ([parsed-input spelled-out]
-   (->> parsed-input
-        (map #(calibration-value % spelled-out))
-        (apply +))))
+(defn last-occurence [digits line]
+  (second (re-find (re-pattern (str ".*(" (string/join "|" digits) ")")) line)))
 
-(defn answer-part-1 [parsed-input] (answer parsed-input))
+(defn calibration-value [line digit->long]
+  (let [digits (keys digit->long)]
+    (parse-long (str (digit->long (first-occurence digits line))
+                     (digit->long (last-occurence digits line))))))
 
+(defn answer [parsed-input digit->long]
+  (apply + (map #(calibration-value % digit->long) parsed-input)))
+
+(defn answer-part-1 [parsed-input] (answer parsed-input digit->long))
 
 (def part-1-answer (answer-part-1 parsed-input))
 
@@ -56,8 +39,19 @@
 ;;; Part 2
 ;;; ============================================================================
 
-(defn answer-part-2 [parsed-input] (answer parsed-input true))
+(def spelled-out-digit->long
+  {"one"   1
+   "two"   2
+   "three" 3
+   "four"  4
+   "five"  5
+   "six"   6
+   "seven" 7
+   "eight" 8
+   "nine"  9})
 
+(defn answer-part-2 [parsed-input]
+  (answer parsed-input (merge digit->long spelled-out-digit->long)))
 
 (def part-2-answer (answer-part-2 parsed-input))
 
