@@ -1,6 +1,5 @@
 (ns advent-of-code.year-2023.day-03
   (:require [advent-of-code.core :as core]
-            [clojure.set :as set]
             [clojure.string :as string]))
 
 (def input (core/get-input))
@@ -82,9 +81,9 @@
   (->> (part-number-coordinates schematic)
        (map (fn [coordinates]
               (zipmap (number-neighbor-coordinates coordinates schematic)
-                      (repeat #{(coordinate->part-number coordinates
-                                                         schematic)}))))
-       (apply merge-with set/union)))
+                      (repeat [(coordinate->part-number coordinates
+                                                        schematic)]))))
+       (apply merge-with into)))
 
 (defn gear-ratio [coordinates coordinates->part-number-neighbors]
   (let [neighbors (coordinates->part-number-neighbors coordinates)]
