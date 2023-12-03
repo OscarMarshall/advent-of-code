@@ -1,7 +1,7 @@
 (ns advent-of-code.year-2023.day-03
   (:require [advent-of-code.core :as core]
-            [clojure.string :as string]
-            [clojure.set :as set]))
+            [clojure.set :as set]
+            [clojure.string :as string]))
 
 (def input (core/get-input))
 
@@ -82,7 +82,8 @@
   (->> (part-number-coordinates schematic)
        (map (fn [coordinates]
               (zipmap (number-neighbor-coordinates coordinates schematic)
-                      (repeat coordinates))))
+                      (repeat #{(coordinate->part-number coordinates
+                                                         schematic)}))))
        (apply merge-with set/union)))
 
 (defn gear-ratio [coordinates coordinates->part-number-neighbors]
@@ -98,4 +99,5 @@
 
 (def part-2-answer (answer-part-2 parsed-input))
 
-(assert (= part-2-answer 232350))
+(assert (not= part-2-answer 232350))
+(assert (= part-2-answer 80403602))
