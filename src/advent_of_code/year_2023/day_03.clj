@@ -18,17 +18,23 @@
 
 (defn schematic-height [schematic] (count schematic))
 
-(defn part-number-length [[row column] schematic]
+(defn number-length [[row column] schematic]
   (count (take-while digits (map #(get-in schematic [row %])
                                  (range column (schematic-width schematic))))))
 
-(defn part-number-coordinate? [[row column :as coordinates] schematic]
+(defn number-neighbor-coordinates [[row column :as coordinates] schematic]
+  (let [column-start (dec column)
+        column-end   (+ column (number-length coordinates schematic))]
+    (concat (for [row2    [(dec row) (inc row)]
+                  column2 (range column-start (inc column-end))]
+              [row2 column2])
+            (map (fn [column2] [row column2])
+                 (range column-start (inc column-end))))))
+
+(defn part-number-coordinate? [coordinates schematic]
   (some (fn [coordinates2]
           (not ((conj digits \.) (get-in schematic coordinates2))))
-        (for [row2    (range (dec row) (+ row 2))
-              column2 [(dec column)
-                       (+ column (part-number-length coordinates schematic))]]
-          [row2 column2])))
+        (number-neighbor-coordinates coordinates schematic)))
 
 (defn all-coordinates [schematic]
   (for [row    (range (schematic-height schematic))
@@ -55,7 +61,8 @@
 
 (def part-1-answer (answer-part-1 parsed-input))
 
-(assert (= part-1-answer 291177))
+(assert (not= part-1-answer 291177))
+(assert (= part-1-answer 534693))
 
 
 ;;; Part 2
