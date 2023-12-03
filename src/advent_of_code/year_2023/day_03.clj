@@ -1,6 +1,7 @@
 (ns advent-of-code.year-2023.day-03
   (:require [advent-of-code.core :as core]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [clojure.set :as set]))
 
 (def input (core/get-input))
 
@@ -48,6 +49,10 @@
                  (not (digits (get-in schematic [row (dec column)])))))
           (all-coordinates schematic)))
 
+(defn part-number-coordinates [schematic]
+  (filter #(part-number-coordinate? % schematic)
+          (number-coordinates schematic)))
+
 (defn coordinate->part-number [[row column :as coordinate] schematic]
   (parse-long (apply str
                      (subvec (schematic row)
@@ -57,8 +62,7 @@
 
 (defn answer-part-1 [schematic]
   (apply + (map #(coordinate->part-number % schematic)
-                (filter #(part-number-coordinate? % schematic)
-                        (number-coordinates schematic)))))
+                (part-number-coordinates schematic))))
 
 (def part-1-answer (answer-part-1 parsed-input))
 
@@ -70,9 +74,28 @@
 ;;; Part 2
 ;;; ============================================================================
 
-(defn answer-part-2 [parsed-input]
-  parsed-input)
+(defn asterisk-coordinates [schematic]
+  (filter (fn [coordinates] (= (get-in schematic coordinates) \*))
+          (all-coordinates schematic)))
+
+(defn part-number-coordinates-by-neighbor [schematic]
+  (->> (part-number-coordinates schematic)
+       (map (fn [coordinates]
+              (zipmap (number-neighbor-coordinates coordinates schematic)
+                      (repeat coordinates))))
+       (apply merge-with set/union)))
+
+(defn gear-ratio [coordinates coordinates->part-number-neighbors]
+  (let [neighbors (coordinates->part-number-neighbors coordinates)]
+    (when (= (count neighbors) 2)
+      (apply * neighbors))))
+
+(defn answer-part-2 [schematic]
+  (let [coordinates->part-number-neighbors (part-number-coordinates-by-neighbor
+                                            schematic)]
+    (apply + (keep #(gear-ratio % coordinates->part-number-neighbors)
+                   (asterisk-coordinates schematic)))))
 
 (def part-2-answer (answer-part-2 parsed-input))
 
-(assert (= part-2-answer part-2-answer))
+(assert (= part-2-answer 232350))
