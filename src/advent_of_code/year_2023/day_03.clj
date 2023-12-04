@@ -31,15 +31,18 @@
           [row column-start]
           [row column-end])))
 
+(defn symbol-character? [character]
+  (and (not= character \.) (not (digits character))))
+
 (defn part-number-coordinate? [coordinates schematic]
-  (some (fn [coordinates2]
-          (not ((conj digits \.) (get-in schematic coordinates2 \.))))
-        (number-neighbor-coordinates coordinates schematic)))
+  (boolean (some (fn [coordinates2]
+                   (symbol-character? (get-in schematic coordinates2 \.)))
+                 (number-neighbor-coordinates coordinates schematic))))
 
 (defn all-coordinates [schematic]
-  (let [width (schematic-width schematic)]
+  (let [widths (range (schematic-width schematic))]
     (for [row    (range (schematic-height schematic))
-          column (range width)]
+          column widths]
       [row column])))
 
 (defn number-coordinates [schematic]
