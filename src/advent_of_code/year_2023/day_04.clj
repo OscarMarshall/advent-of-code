@@ -1,20 +1,23 @@
 (ns advent-of-code.year-2023.day-04
   (:require [advent-of-code.core :as core]
+            [clojure.set :as set]
             [clojure.string :as string]
-            [clojure.set :as set]))
+            [medley.core :as medley]))
 
 (def input (core/get-input))
 
 (defn parse-numbers [s] (map parse-long (string/split s #" +")))
 
 (defn parse-card [card]
-  (let [[_ id body] (re-matches #"Card +(\d+): +(.*)" card)]
-    [(parse-long id) (zipmap [:winning-numbers :numbers]
-                             (map (comp set parse-numbers)
-                                  (string/split body #" +\| +")))]))
+  (let [[_ id body] (re-matches #"Card +(\d+): +(.*)" card)
+        id          (parse-long id)]
+    (assoc (zipmap [:winning-numbers :numbers]
+                   (map (comp set parse-numbers)
+                        (string/split body #" +\| +")))
+           :id id)))
 
 (defn parse-input [input]
-  (into {} (map parse-card) (string/split-lines input)))
+  (medley/index-by :id (map parse-card (string/split-lines input))))
 
 (def parsed-input (parse-input input))
 
@@ -27,8 +30,7 @@
 (defn matched-numbers [{:keys [winning-numbers numbers]}]
   (count (set/intersection winning-numbers numbers)))
 
-(defn score-card [card]
-  (nth scores (matched-numbers card)))
+(defn score-card [card] (nth scores (matched-numbers card)))
 
 (defn answer-part-1 [parsed-input]
   (apply + (map score-card (vals parsed-input))))
@@ -41,24 +43,22 @@
 ;;; Part 2
 ;;; ============================================================================
 
+(defn initial-card-counts [cards]
+  (medley/map-vals (fn [v] (assoc v :count 1)) cards))
+
 (defn add-copies [cards ids amount]
   (reduce #(update-in %1 [%2 :count] + amount) cards ids))
 
-(defn answer-part-2 [parsed-input]
-  (let [initial-cards (into {}
-                            (map (fn [[k v]] [k (assoc v :count 1)]))
-                            parsed-input)]
-    (->> (reduce (fn [cards id]
-                   (let [{:as card, :keys [count]} (cards id)]
-                     (add-copies cards
-                                 (map (partial + id 1)
-                                      (range (matched-numbers card)))
-                                 count)))
-                 initial-cards
-                 (range 1 (inc (count initial-cards))))
-         vals
-         (map :count)
-         (apply +))))
+(defn cards-won [{:as card, :keys [id]}]
+  (take (matched-numbers card) (range (inc id) ##Inf)))
+
+(defn answer-part-2 [cards]
+  (apply + (map :count
+                (vals (reduce (fn [cards id]
+                                (let [{:as card, :keys [count]} (cards id)]
+                                  (add-copies cards (cards-won card) count)))
+                              (initial-card-counts cards)
+                              (range 1 (inc (count cards))))))))
 
 (def part-2-answer (answer-part-2 parsed-input))
 
