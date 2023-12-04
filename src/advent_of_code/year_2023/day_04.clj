@@ -11,7 +11,7 @@
   (let [[_ id body] (re-matches #"Card +(\d+): +(.*)" card)]
     [(parse-long id) (zipmap [:winning-numbers :numbers]
                              (map (comp set parse-numbers)
-                                  (string/split body #" \| ")))]))
+                                  (string/split body #" +\| +")))]))
 
 (defn parse-input [input]
   (into {} (map parse-card) (string/split-lines input)))
@@ -22,10 +22,13 @@
 ;;; Part 1
 ;;; ============================================================================
 
-(def scores (cons 0 (iterate (partial * 2) 1)))
+(def scores (vec (take 11 (cons 0 (iterate (partial * 2) 1)))))
 
-(defn score-card [{:keys [winning-numbers numbers]}]
-  (nth scores (count (set/intersection winning-numbers numbers))))
+(defn matched-numbers [{:keys [winning-numbers numbers]}]
+  (count (set/intersection winning-numbers numbers)))
+
+(defn score-card [card]
+  (nth scores (matched-numbers card)))
 
 (defn answer-part-1 [parsed-input]
   (apply + (map score-card (vals parsed-input))))
@@ -38,9 +41,25 @@
 ;;; Part 2
 ;;; ============================================================================
 
+(defn add-copies [cards ids amount]
+  (reduce #(update-in %1 [%2 :count] + amount) cards ids))
+
 (defn answer-part-2 [parsed-input]
-  parsed-input)
+  (let [initial-cards (into {}
+                            (map (fn [[k v]] [k (assoc v :count 1)]))
+                            parsed-input)]
+    (->> (reduce (fn [cards id]
+                   (let [{:as card, :keys [count]} (cards id)]
+                     (add-copies cards
+                                 (map (partial + id 1)
+                                      (range (matched-numbers card)))
+                                 count)))
+                 initial-cards
+                 (range 1 (inc (count initial-cards))))
+         vals
+         (map :count)
+         (apply +))))
 
 (def part-2-answer (answer-part-2 parsed-input))
 
-(assert (= part-2-answer part-2-answer))
+(assert (= part-2-answer 6283755))
