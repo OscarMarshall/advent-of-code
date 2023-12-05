@@ -8,22 +8,20 @@
 (def parsed-input (parse-input input))
 
 
-;;; Part 1
-;;; ============================================================================
+;;;; Part 1
 
-(defn answer-part-1 [parsed-input]
-  parsed-input)
+(defn answer-part-1 [x]
+  x)
 
 (def part-1-answer (answer-part-1 parsed-input))
 
 (assert (= part-1-answer part-1-answer))
 
 
-;;; Part 2
-;;; ============================================================================
+;;;; Part 2
 
-(defn answer-part-2 [parsed-input]
-  parsed-input)
+(defn answer-part-2 [x]
+  x)
 
 (def part-2-answer (answer-part-2 parsed-input))
 
