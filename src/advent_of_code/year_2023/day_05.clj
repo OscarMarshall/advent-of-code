@@ -5,7 +5,7 @@
 (def input (core/get-input))
 
 (defn parse-conversion-map [s]
-  (sort (map #(mapv parse-long (str/split % #" ")) (rest (str/split-lines s)))))
+  (map #(mapv parse-long (str/split % #" ")) (rest (str/split-lines s))))
 
 (defn parse-input [input]
   (let [[seeds-str & map-strs] (str/split input #"\n\n")
@@ -19,18 +19,19 @@
 ;;;; Part 1
 
 (defn convert [id conversion-map]
-  (or (when-some [[destination-start source-start length]
-                  (last (take-while #(<= (second %) id) conversion-map))]
-        (when (< id (+ source-start length))
-          (+ destination-start (- id source-start))))
+  (or (some (fn [[destination-start source-start length]]
+              (when (<= source-start id (dec (+ source-start length)))
+                (+ destination-start (- id source-start))))
+            conversion-map)
       id))
 
 (defn answer-part-1 [{:keys [seeds conversion-maps]}]
-  (transduce (map #(reduce convert % conversion-maps)) min ##Inf (rest seeds)))
+  (transduce (map #(reduce convert % conversion-maps)) min ##Inf seeds))
 
 (def part-1-answer (answer-part-1 parsed-input))
 
-(assert (= part-1-answer 2036236))
+(assert (not= part-1-answer 2036236))
+(assert (= part-1-answer 177942185))
 
 
 ;;;; Part 2
