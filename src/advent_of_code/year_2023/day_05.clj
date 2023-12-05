@@ -1,6 +1,7 @@
 (ns advent-of-code.year-2023.day-05
   (:require [advent-of-code.core :as core]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [medley.core :as medley]))
 
 (def input (core/get-input))
 
@@ -36,9 +37,41 @@
 
 ;;;; Part 2
 
-(defn answer-part-2 [x]
-  x)
+(defn convert-range [[id-start id-length :as id-range] conversion-map]
+  (or (let [id-end (+ id-start id-length)]
+        (some (fn [[destination-start source-start length]]
+                (let [source-end (+ source-start length)]
+                  (cond
+                    ;; Contained
+                    (<= source-start id-start (dec id-end) (dec source-end))
+                    [[(+ destination-start (- id-start source-start))
+                      id-length]]
+
+                    ;; End overlaps
+                    (< id-start source-start id-end)
+                    (mapcat #(convert-range % conversion-map)
+                            [[id-start (- source-start id-start)]
+                             [source-start (- id-end source-start)]])
+
+                    ;; Beginning overlaps
+                    (<= source-start id-start (dec source-end) (dec id-end))
+                    (let [excess (- (+ id-start id-length) source-end)]
+                      (cons [(+ destination-start (- id-start source-start))
+                             (- id-length excess)]
+                            (convert-range [(+ destination-start length) excess]
+                                           conversion-map))))))
+              conversion-map))
+      [id-range]))
+
+(defn answer-part-2 [{:keys [seeds conversion-maps]}]
+  (let [seed-ranges (map vec (partition 2 seeds))]
+    (->> conversion-maps
+         (reduce (fn [ranges conversion-map]
+                   (mapcat #(convert-range % conversion-map) ranges))
+                 seed-ranges)
+         (apply medley/least)
+         first)))
 
 (def part-2-answer (answer-part-2 parsed-input))
 
-(assert (= part-2-answer part-2-answer))
+(assert (= part-2-answer 59390325))
