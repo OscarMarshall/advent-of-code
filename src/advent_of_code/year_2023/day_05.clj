@@ -47,31 +47,29 @@
                     [[(+ destination-start (- id-start source-start))
                       id-length]]
 
+                    ;; Beginning overlaps
+                    (<= source-start id-start (dec source-end) (dec id-end))
+                    (mapcat #(convert-range % conversion-map)
+                            [[id-start (- source-end id-start)]
+                             [source-end (- id-end source-end)]])
+
                     ;; End overlaps
                     (< id-start source-start id-end)
                     (mapcat #(convert-range % conversion-map)
                             [[id-start (- source-start id-start)]
-                             [source-start (- id-end source-start)]])
-
-                    ;; Beginning overlaps
-                    (<= source-start id-start (dec source-end) (dec id-end))
-                    (let [excess (- (+ id-start id-length) source-end)]
-                      (cons [(+ destination-start (- id-start source-start))
-                             (- id-length excess)]
-                            (convert-range [(+ destination-start length) excess]
-                                           conversion-map))))))
+                             [source-start (- id-end source-start)]]))))
               conversion-map))
       [id-range]))
 
 (defn answer-part-2 [{:keys [seeds conversion-maps]}]
-  (let [seed-ranges (map vec (partition 2 seeds))]
-    (->> conversion-maps
-         (reduce (fn [ranges conversion-map]
-                   (mapcat #(convert-range % conversion-map) ranges))
-                 seed-ranges)
-         (apply medley/least)
-         first)))
+  (->> conversion-maps
+       (reduce (fn [ranges conversion-map]
+                 (mapcat #(convert-range % conversion-map) ranges))
+               (partition 2 seeds))
+       (apply medley/least)
+       first))
 
 (def part-2-answer (answer-part-2 parsed-input))
 
-(assert (= part-2-answer 59390325))
+(assert (> part-2-answer 59390325))
+(assert (= part-2-answer 69841803))
