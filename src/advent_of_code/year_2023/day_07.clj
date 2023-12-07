@@ -15,7 +15,7 @@
 
 (def character->strength
   (into {} (map vector
-                (concat (map #(first (str %)) (range 2 11)) [\J \Q \K \A])
+                (concat (map #(first (str %)) (range 2 10)) [\T \J \Q \K \A])
                 (range))))
 
 (def hand-type->strength
@@ -48,7 +48,8 @@
 
 (def part-1-answer (answer-part-1 parsed-input))
 
-(assert (= part-1-answer 253046761))
+(assert (> part-1-answer 253046761))
+(assert (= part-1-answer 253205868))
 
 
 ;;;; Part 2
