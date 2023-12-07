@@ -30,8 +30,10 @@
 ;;;; Part 2
 
 (defn answer-part-2 [x]
-  x)
+  (let [time     (parse-long (apply str (map :time x)))
+        distance (parse-long (apply str (map :distance x)))]
+    (ways-faster {:time time, :distance distance})))
 
 (def part-2-answer (answer-part-2 parsed-input))
 
-(assert (= part-2-answer part-2-answer))
+(assert (= part-2-answer 28101347))
