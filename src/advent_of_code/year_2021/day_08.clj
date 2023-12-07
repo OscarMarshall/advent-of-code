@@ -3,7 +3,7 @@
             [clojure.string :as string]
             [clojure.set :as set]))
 
-(def input (core/get-input))
+(def input (core/get-input *file*))
 
 (defn parse-signal-patterns [signal-patterns]
   (map (partial into #{}) (string/split signal-patterns #" ")))

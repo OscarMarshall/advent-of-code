@@ -2,7 +2,7 @@
   (:require [advent-of-code.core :as core]
             [clojure.string :as str]))
 
-(def input (core/get-input))
+(def input (core/get-input *file*))
 
 (defn parse-input [input]
   (map #(update (zipmap [:hand :bid] (str/split % #" ")) :bid parse-long)

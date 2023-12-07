@@ -5,7 +5,7 @@
             [clojure.edn :as edn]
             [medley.core :as medley]))
 
-(def input (core/get-input))
+(def input (core/get-input *file*))
 
 (defn number-monkey [s] {:type :number, :value (edn/read-string s)})
 

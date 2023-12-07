@@ -3,7 +3,7 @@
             [clojure.string :as string]
             [medley.core :as medley]))
 
-(def input (core/get-input))
+(def input (core/get-input *file*))
 
 (def character->blizzard-direction {\> :right, \v :down, \< :left, \^ :up})
 

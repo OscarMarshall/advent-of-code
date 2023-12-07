@@ -6,7 +6,7 @@
 
 (set! *warn-on-reflection* true)
 
-(def input (core/get-input))
+(def input (core/get-input *file*))
 
 (defn parse-input [input]
   (let [[board path] (string/split input #"\n\n")]

@@ -2,7 +2,7 @@
   (:require [advent-of-code.core :as core]
             [clojure.string :as str]))
 
-(def input (core/get-input))
+(def input (core/get-input *file*))
 
 (defn parse-subset [subset]
   (into {}

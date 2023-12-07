@@ -2,7 +2,7 @@
   (:require [advent-of-code.core :as core]
             [clojure.string :as string]))
 
-(def input (core/get-input))
+(def input (core/get-input *file*))
 
 (defn parse-input [input]
   (map #(Long/parseLong %) (string/split input #",")))

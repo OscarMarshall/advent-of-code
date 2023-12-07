@@ -1,7 +1,7 @@
 (ns advent-of-code.year-2021.day-17
   (:require [advent-of-code.core :as core]))
 
-(def input (core/get-input))
+(def input (core/get-input *file*))
 
 (defn parse-input [input]
   (let [[x1 x2] (map #(Long/parseLong %)

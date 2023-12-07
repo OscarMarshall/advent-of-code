@@ -2,7 +2,7 @@
   (:require [advent-of-code.core :as core]
             [clojure.string :as string]))
 
-(def input (core/get-input))
+(def input (core/get-input *file*))
 
 (defn empty-matcher [] {:type :empty-matcher})
 (defn empty-matcher? [x] (boolean (some-> x :type (= :empty-matcher))))

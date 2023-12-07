@@ -3,7 +3,7 @@
             [clojure.math :as math]
             [clojure.string :as str]))
 
-(def input (core/get-input))
+(def input (core/get-input *file*))
 
 (defn parse-input [input]
   (apply map

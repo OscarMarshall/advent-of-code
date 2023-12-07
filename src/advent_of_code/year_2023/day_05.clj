@@ -3,7 +3,7 @@
             [clojure.string :as str]
             [medley.core :as medley]))
 
-(def input (core/get-input))
+(def input (core/get-input *file*))
 
 (defn parse-conversion-map [s]
   (map #(mapv parse-long (str/split % #" ")) (rest (str/split-lines s))))

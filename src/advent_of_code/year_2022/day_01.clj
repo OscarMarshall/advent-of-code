@@ -4,7 +4,7 @@
 
 (set! *warn-on-reflection* true)
 
-(def input (core/get-input))
+(def input (core/get-input *file*))
 
 (defn parse-input [input]
   (sequence (comp (partition-by empty?)

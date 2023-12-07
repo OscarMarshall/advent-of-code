@@ -3,7 +3,7 @@
             [clojure.string :as string]
             [clojure.set :as set]))
 
-(def input (core/get-input))
+(def input (core/get-input *file*))
 
 (defn parse-input [input]
   (let [[dots _ instructions] (partition-by #{""} (string/split-lines input))]

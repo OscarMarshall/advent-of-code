@@ -2,7 +2,7 @@
   (:require [advent-of-code.core :as core]
             [clojure.string :as string]))
 
-(def input (core/get-input))
+(def input (core/get-input *file*))
 
 (defn parse-field [line]
   (let [[_ name a1 z1 a2 z2] (re-matches #"(.+): (\d+)-(\d+) or (\d+)-(\d+)"

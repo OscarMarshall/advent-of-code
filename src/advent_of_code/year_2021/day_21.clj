@@ -1,7 +1,7 @@
 (ns advent-of-code.year-2021.day-21
   (:require [advent-of-code.core :as core]))
 
-(def input (core/get-input))
+(def input (core/get-input *file*))
 
 (defn parse-input [input]
   (mapv (comp #(Long/parseLong %) second)

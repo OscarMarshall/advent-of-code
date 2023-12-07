@@ -2,7 +2,7 @@
   (:require [advent-of-code.core :as core]
             [clojure.string :as string]))
 
-(def input (core/get-input))
+(def input (core/get-input *file*))
 
 (def pattern #"(on|off) x=(.+)\.\.(.+),y=([\-0-9]+)\.\.(.+),z=(.+)\.\.(.+)")
 

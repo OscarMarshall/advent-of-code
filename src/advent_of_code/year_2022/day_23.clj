@@ -4,7 +4,7 @@
             [clojure.string :as string]
             [medley.core :as medley]))
 
-(def input (core/get-input))
+(def input (core/get-input *file*))
 
 (defn parse-input [input]
   (let [lines (string/split-lines input)]

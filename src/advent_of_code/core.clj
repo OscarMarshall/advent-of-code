@@ -1,5 +1,13 @@
 (ns advent-of-code.core
-  (:require [clojure.string :as string]))
+  (:require [clojure.string :as str]))
 
-(defmacro get-input []
-  `(slurp ~(string/replace *file* #"[a-z]?\.clj$" "_input.txt")))
+(defn get-input
+  ([current-file] (get-input current-file nil))
+  ([current-file type]
+   (slurp (str/replace current-file
+                       #"[a-z]?\.clj$"
+                       (str "_input"
+                            (if type
+                              (str "_" (str/replace (name type) \- \_))
+                              "")
+                            ".txt")))))
