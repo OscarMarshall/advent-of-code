@@ -37,14 +37,17 @@
       2 (if (= y 2) :two-pair :one-pair)
       1 :high-card)))
 
+(defn hand-strength [hand]
+  [(hand-type->strength (hand-type hand)) (mapv character->strength hand)])
+
+(defn score-hands-and-bids [sorted-hands-and-bids]
+  (reduce + (sequence (map (fn [{:keys [bid]} rank] (* bid rank)))
+                      sorted-hands-and-bids
+                      (range 1 ##Inf))))
+
 (defn answer-part-1 [hands-and-bids]
-  (reduce +
-          (sequence (map (fn [{:keys [bid]} rank] (* bid rank)))
-                    (sort-by (fn [{:keys [hand]}]
-                               [(hand-type->strength (hand-type hand))
-                                (mapv character->strength hand)])
-                             hands-and-bids)
-                    (range 1 ##Inf))))
+  (score-hands-and-bids (sort-by (fn [{:keys [hand]}] (hand-strength hand))
+                                 hands-and-bids)))
 
 (def part-1-answer (answer-part-1 parsed-input))
 
@@ -54,9 +57,24 @@
 
 ;;;; Part 2
 
-(defn answer-part-2 [x]
-  x)
+(def character->strength2
+  (into {} (map vector
+                (concat [\J] (map #(first (str %)) (range 2 10)) [\T \Q \K \A])
+                (range))))
+
+(defn hand-type2 [hand]
+  (let [{:as kinds} (frequencies hand)]
+    (hand-type (str/replace hand
+                            \J
+                            (key (apply max-key val (assoc kinds \J 0)))))))
+
+(defn hand-strength2 [hand]
+  [(hand-type->strength (hand-type2 hand)) (mapv character->strength2 hand)])
+
+(defn answer-part-2 [hands-and-bids]
+  (score-hands-and-bids (sort-by (fn [{:keys [hand]}] (hand-strength2 hand))
+                                 hands-and-bids)))
 
 (def part-2-answer (answer-part-2 parsed-input))
 
-(assert (= part-2-answer part-2-answer))
+(assert (= part-2-answer 253907829))
