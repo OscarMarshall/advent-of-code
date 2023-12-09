@@ -28,10 +28,10 @@
 
 ;;;; Part 2
 
-(defn answer-part-2 [x]
-  x)
+(defn answer-part-2 [xs]
+  (answer-part-1 (map #(vec (reverse %)) xs)))
 
 (core/part 2
   parse-input answer-part-2 *file*
-  #_[:sample1]
-  [:input])
+  [:sample1 2]
+  [:input 1100])
