@@ -2,7 +2,9 @@
   (:require [advent-of-code.core :as core]
             [clojure.string :as str]))
 
-(def input (core/get-input *file*))
+(println "# Day 2")
+
+(set! *warn-on-reflection* true)
 
 (defn parse-subset [subset]
   (into {}
@@ -15,8 +17,6 @@
      :subsets (map parse-subset (str/split subsets #"; "))}))
 
 (defn parse-input [input] (map parse-game (str/split-lines input)))
-
-(def parsed-input (parse-input input))
 
 
 ;;;; Part 1
@@ -31,9 +31,10 @@
 (defn answer-part-1 [games]
   (transduce (comp (filter possible-game?) (map :id)) + games))
 
-(def part-1-answer (answer-part-1 parsed-input))
-
-(assert (= part-1-answer 2727))
+(core/part 1
+  parse-input answer-part-1 *file*
+  [:sample1 8]
+  [:input 2727])
 
 
 ;;;; Part 2
@@ -45,6 +46,7 @@
 (defn answer-part-2 [games]
   (transduce (map #(set-power (smallest-full-set %))) + games))
 
-(def part-2-answer (answer-part-2 parsed-input))
-
-(assert (= part-2-answer 56580))
+(core/part 2
+  parse-input answer-part-2 *file*
+  [:sample1 2286]
+  [:input 56580])

@@ -2,7 +2,7 @@
   (:require [advent-of-code.core :as core]
             [clojure.string :as str]))
 
-(println "# Day " 00)
+(println "# Day 7")
 
 (set! *warn-on-reflection* true)
 
@@ -10,16 +10,8 @@
   (map #(update (zipmap [:hand :bid] (str/split % #" ")) :bid parse-long)
        (str/split-lines input)))
 
-(def sample-input (core/get-input *file* :sample))
-(def sample-parsed-input (parse-input sample-input))
-
-(def input (core/get-input *file*))
-(def parsed-input (parse-input input))
-
 
 ;;;; Part 1
-
-(println "## Part 1")
 
 (def character->strength
   (into {} (map vector
@@ -57,28 +49,13 @@
   (score-hands-and-bids (sort-by (fn [{:keys [hand]}] (hand-strength hand))
                                  hands-and-bids)))
 
-(println "### Sample Answer")
-
-(def part-1-sample-answer (time (answer-part-1 sample-parsed-input)))
-
-(prn part-1-sample-answer)
-(println)
-
-(println "### Answer")
-
-(def part-1-answer (time (answer-part-1 parsed-input)))
-
-(prn part-1-answer)
-(println)
-
-(assert (= part-1-sample-answer 6440))
-(assert (> part-1-answer 253046761))
-(assert (= part-1-answer 253205868))
+(core/part 1
+  parse-input answer-part-1 *file*
+  [:sample1 6440]
+  [:input [> 253046761] 253205868])
 
 
 ;;;; Part 2
-
-(println "## Part 2")
 
 (def character->strength2
   (into {} (map vector
@@ -98,19 +75,7 @@
   (score-hands-and-bids (sort-by (fn [{:keys [hand]}] (hand-strength2 hand))
                                  hands-and-bids)))
 
-(println "### Sample Answer")
-
-(def part-2-sample-answer (time (answer-part-2 sample-parsed-input)))
-
-(prn part-2-sample-answer)
-(println)
-
-(println "### Answer")
-
-(def part-2-answer (time (answer-part-2 parsed-input)))
-
-(prn part-2-answer)
-(println)
-
-(assert (= part-2-sample-answer 5905))
-(assert (= part-2-answer 253907829))
+(core/part 2
+  parse-input answer-part-2 *file*
+  [:sample1 5905]
+  [:input 253907829])

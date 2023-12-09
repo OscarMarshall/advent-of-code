@@ -2,11 +2,11 @@
   (:require [advent-of-code.core :as core]
             [clojure.string :as str]))
 
-(def input (core/get-input *file*))
+(println "# Day 3")
+
+(set! *warn-on-reflection* true)
 
 (defn parse-input [input] (mapv vec (str/split-lines input)))
-
-(def parsed-input (parse-input input))
 
 
 ;;;; Part 1
@@ -66,11 +66,10 @@
              +
              (part-number-coordinates schematic)))
 
-(def part-1-answer (answer-part-1 parsed-input))
-
-(assert (not= part-1-answer 291177))
-(assert (not= part-1-answer 534693))
-(assert (= part-1-answer 528819))
+(core/part 1
+  parse-input answer-part-1 *file*
+  [:sample1 4361]
+  [:input [> 291177] [< 534693] 528819])
 
 
 ;;;; Part 2
@@ -98,7 +97,7 @@
                +
                (asterisk-coordinates schematic))))
 
-(def part-2-answer (answer-part-2 parsed-input))
-
-(assert (not= part-2-answer 232350))
-(assert (= part-2-answer 80403602))
+(core/part 2
+  parse-input answer-part-2 *file*
+  [:sample1 467835]
+  [:input [> 232350] 80403602])

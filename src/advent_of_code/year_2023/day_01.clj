@@ -3,11 +3,11 @@
             [clojure.string :as str]
             [medley.core :as medley]))
 
-(def input (core/get-input *file*))
+(println "# Day 1")
+
+(set! *warn-on-reflection* true)
 
 (defn parse-input [input] (str/split-lines input))
-
-(def parsed-input (parse-input input))
 
 
 ;;;; Part 1
@@ -31,9 +31,10 @@
 
 (defn answer-part-1 [lines] (answer lines digit->long))
 
-(def part-1-answer (answer-part-1 parsed-input))
-
-(assert (= part-1-answer 54940))
+(core/part 1
+  parse-input answer-part-1 *file*
+  [:sample1 142]
+  [:input 54940])
 
 
 ;;;; Part 2
@@ -52,8 +53,7 @@
 (defn answer-part-2 [lines]
   (answer lines (merge digit->long spelled-out-digit->long)))
 
-(def part-2-answer (answer-part-2 parsed-input))
-
-(assert (not= part-2-answer 54194))
-(assert (not= part-2-answer 54618))
-(assert (= part-2-answer 54208))
+(core/part 2
+  parse-input answer-part-2 *file*
+  [:sample2 281]
+  [:input [> 54194] [< 54618] 54208])
