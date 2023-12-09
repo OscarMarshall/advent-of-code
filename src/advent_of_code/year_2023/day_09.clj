@@ -14,8 +14,7 @@
 (defn extrapolate [xs]
   (if (every? zero? xs)
     0
-    (+ (peek xs)
-       (extrapolate (mapv #(- (second %) (first %)) (partition 2 1 xs))))))
+    (+ (peek xs) (extrapolate (mapv (fn [[x y]] (- y x)) (partition 2 1 xs))))))
 
 (defn answer-part-1 [xs]
   (transduce (map extrapolate) + xs))
