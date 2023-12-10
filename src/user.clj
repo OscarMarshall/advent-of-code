@@ -43,4 +43,4 @@
                   day
                   sample-id)
           s)
-    (keyword "sample" sample-id)))
+    (keyword (str "sample" sample-id))))
