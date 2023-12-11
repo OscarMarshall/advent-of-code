@@ -1,8 +1,6 @@
 (ns advent-of-code.year-2023.day-11
   (:require [advent-of-code.core :as core]
-            [clojure.string :as str]
-            [medley.core :as medley]
-            [clojure.math :as math]))
+            [clojure.string :as str]))
 
 (println "# Day 11")
 
@@ -14,11 +12,11 @@
 
 (defn image->galaxies [image]
   (let [columns (range (count (first image)))]
-    (into #{} (for [row    (range (count image))
-                    column columns
-                    :let   [coordinates [row column]]
-                    :when  (= (get-in image [row column]) \#)]
-                coordinates))))
+    (set (for [row    (range (count image))
+               column columns
+               :let   [coordinates [row column]]
+               :when  (= (get-in image [row column]) \#)]
+           coordinates))))
 
 (defn expand-dimension [galaxies dimension rate]
   (let [coordinate->galaxies (group-by #(nth % dimension) galaxies)
