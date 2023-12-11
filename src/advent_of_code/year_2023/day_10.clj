@@ -1,9 +1,8 @@
 (ns advent-of-code.year-2023.day-10
   (:require [advent-of-code.core :as core]
-            [clojure.math :as math]
-            [clojure.string :as str]
-            [medley.core :as medley]
-            [clojure.set :as set]))
+            [clojure.math.combinatorics :as combo]
+            [clojure.set :as set]
+            [clojure.string :as str]))
 
 (println "# Day 10")
 
@@ -14,10 +13,8 @@
 ;;;; Part 1
 
 (defn all-coordinates [grid]
-  (let [columns (range (count (first grid)))]
-    (for [row    (range (count grid))
-          column columns]
-      [row column])))
+  (map vec (combo/cartesian-product (range (count grid))
+                                    (range (count (first grid))))))
 
 (def pipe->neighbor-vectors
   {\| #{[-1 0] [1 0]}
@@ -28,7 +25,6 @@
    \F #{[0 1] [1 0]}
    \. #{}
    \S #{[-1 0] [0 1] [1 0] [0 -1]}})
-
 (def neighbor-vectors->pipe (set/map-invert pipe->neighbor-vectors))
 
 (defn neighbors [grid coordinates]
@@ -37,8 +33,8 @@
         (pipe->neighbor-vectors (get-in grid coordinates))))
 
 (defn connected? [grid coordinates1 coordinates2]
-  (and ((neighbors grid coordinates1) coordinates2)
-       ((neighbors grid coordinates2) coordinates1)))
+  (boolean (and ((neighbors grid coordinates1) coordinates2)
+                ((neighbors grid coordinates2) coordinates1))))
 
 (defn trace [grid previous current]
   (cons current
@@ -85,23 +81,20 @@
     (assoc-in grid start start-pipe)))
 
 (defn count-inner-tiles [grid]
-  (transduce cat
-             (fn
-               ([[count]] count)
-               ([[count inside last-elbow] character]
-                (case character
-                  \.      [(cond-> count inside inc) inside]
-                  \|      [count (not inside)]
-                  (\L \F) [count inside character]
-                  \J      (if (= last-elbow \F)
-                            [count (not inside)]
-                            [count inside])
-                  \7      (if (= last-elbow \L)
-                            [count (not inside)]
-                            [count inside])
-                  [count inside last-elbow])))
-             [0 false]
-             (replace-s (simplify-grid grid))))
+  (first (reduce
+          (fn [[count inside] [x y]]
+            (or (case x
+                  \. [(cond-> count inside inc) inside]
+                  \| [count (not inside)]
+                  \L (when (= \7 y) [count (not inside)])
+                  \F (when (= \J y) [count (not inside)])
+                  nil)
+                [count inside]))
+          [0 false]
+          (take-while seq
+                      (iterate rest
+                               (sequence (comp cat (remove #{\-}))
+                                         (replace-s (simplify-grid grid))))))))
 
 (defn answer-part-2 [grid] (count-inner-tiles grid))
 
