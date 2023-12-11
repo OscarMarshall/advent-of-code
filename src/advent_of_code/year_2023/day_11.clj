@@ -1,0 +1,62 @@
+(ns advent-of-code.year-2023.day-11
+  (:require [advent-of-code.core :as core]
+            [clojure.string :as str]
+            [medley.core :as medley]
+            [clojure.math :as math]))
+
+(println "# Day 11")
+
+(set! *warn-on-reflection* true)
+
+(defn parse-input [input] (mapv vec (str/split-lines input)))
+
+;;;; Part 1
+
+(defn image->galaxies [image]
+  (let [columns (range (count (first image)))]
+    (into #{} (for [row    (range (count image))
+                    column columns
+                    :let   [coordinates [row column]]
+                    :when  (= (get-in image [row column]) \#)]
+                coordinates))))
+
+(defn expand-dimension [galaxies dimension]
+  (let [coordinate->galaxies (group-by #(nth % dimension) galaxies)]
+    (first (reduce (fn [[galaxies expansion] index]
+                     (if-some [coordinate-galaxies (coordinate->galaxies index)]
+                       [(reduce (fn [galaxies galaxy]
+                                  (conj galaxies
+                                        (update galaxy dimension + expansion)))
+                                galaxies
+                                coordinate-galaxies)
+                        expansion]
+                       [galaxies (inc expansion)]))
+                   [#{} 0]
+                   (range (inc (apply max (keys coordinate->galaxies))))))))
+
+(defn expand-galaxies [galaxies] (reduce expand-dimension galaxies (range 2)))
+
+(defn answer-part-1 [image]
+  (let [expanded-galaxies       (vec (expand-galaxies (image->galaxies image)))
+        expanded-galaxies-count (count expanded-galaxies)]
+    (apply + (for [index1 (range expanded-galaxies-count)
+                   index2 (range (inc index1) expanded-galaxies-count)]
+               (apply + (apply map
+                               #(abs (- %1 %2))
+                               (map expanded-galaxies [index1 index2])))))))
+
+(core/part 1
+  parse-input answer-part-1 *file*
+  [:sample1 374]
+  [:input 9681886])
+
+
+;;;; Part 2
+
+(defn answer-part-2 [x]
+  x)
+
+(core/part 2
+  parse-input answer-part-2 *file*
+  #_[:sample1]
+  [:input])
