@@ -20,8 +20,9 @@
                     :when  (= (get-in image [row column]) \#)]
                 coordinates))))
 
-(defn expand-dimension [galaxies dimension]
-  (let [coordinate->galaxies (group-by #(nth % dimension) galaxies)]
+(defn expand-dimension [galaxies dimension rate]
+  (let [coordinate->galaxies (group-by #(nth % dimension) galaxies)
+        new-rows             (dec rate)]
     (first (reduce (fn [[galaxies expansion] index]
                      (if-some [coordinate-galaxies (coordinate->galaxies index)]
                        [(reduce (fn [galaxies galaxy]
@@ -30,20 +31,24 @@
                                 galaxies
                                 coordinate-galaxies)
                         expansion]
-                       [galaxies (inc expansion)]))
+                       [galaxies (+ expansion new-rows)]))
                    [#{} 0]
                    (range (inc (apply max (keys coordinate->galaxies))))))))
 
-(defn expand-galaxies [galaxies] (reduce expand-dimension galaxies (range 2)))
+(defn expand-galaxies [galaxies rate]
+  (reduce #(expand-dimension %1 %2 rate) galaxies (range 2)))
 
-(defn answer-part-1 [image]
-  (let [expanded-galaxies       (vec (expand-galaxies (image->galaxies image)))
-        expanded-galaxies-count (count expanded-galaxies)]
-    (apply + (for [index1 (range expanded-galaxies-count)
-                   index2 (range (inc index1) expanded-galaxies-count)]
+(defn sum-all-distances [galaxies]
+  (let [galaxies       (vec galaxies)
+        galaxies-count (count galaxies)]
+    (apply + (for [index1 (range galaxies-count)
+                   index2 (range (inc index1) galaxies-count)]
                (apply + (apply map
                                #(abs (- %1 %2))
-                               (map expanded-galaxies [index1 index2])))))))
+                               (map galaxies [index1 index2])))))))
+
+(defn answer-part-1 [image]
+  (sum-all-distances (expand-galaxies (image->galaxies image) 2)))
 
 (core/part 1
   parse-input answer-part-1 *file*
@@ -53,10 +58,10 @@
 
 ;;;; Part 2
 
-(defn answer-part-2 [x]
-  x)
+(defn answer-part-2 [image]
+  (sum-all-distances (expand-galaxies (image->galaxies image) 1000000)))
 
 (core/part 2
   parse-input answer-part-2 *file*
-  #_[:sample1]
-  [:input])
+  [:sample1 82000210]
+  [:input 791134099634])
