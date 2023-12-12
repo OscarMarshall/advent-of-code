@@ -13,27 +13,37 @@
 
 ;;;; Part 1
 
-(defn possible-arrangements [springs damaged-groups]
-  (if (and (= (count damaged-groups) 1)
-           (= (first damaged-groups) (count springs)))
-    (when (every? #{\# \?} springs) [(repeat (first damaged-groups) \#)])
-    (case (first springs)
-      nil (when (empty? damaged-groups) [[]])
-      \.  (map #(cons \. %)
-               (possible-arrangements (rest springs) damaged-groups))
-      \#  (when-some [damaged-group (first damaged-groups)]
-            (when (and (every? #{\# \?} (take damaged-group springs))
-                       (#{\. \?} (nth springs damaged-group nil)))
-              (let [lead-springs (concat (repeat damaged-group \#) [\.])]
-                (map #(concat lead-springs %)
-                     (possible-arrangements (drop (inc damaged-group) springs)
-                                            (rest damaged-groups))))))
-      \?  (mapcat #(possible-arrangements (cons % (rest springs))
-                                          damaged-groups)
-                  [\. \#]))))
+(def possible-arrangements
+  (memoize
+   (fn [springs damaged-groups]
+     (if (= (count springs)
+            (+ (apply + damaged-groups) (dec (count damaged-groups))))
+       (if (every? identity
+                   (map #(%1 %2)
+                        (flatten (interpose [#{\. \?}]
+                                            (map #(repeat % #{\# \?})
+                                                 damaged-groups)))
+                        springs))
+         1
+         0)
+       (case (first springs)
+         nil (if (empty? damaged-groups) 1 0)
+         \.  (recur (rest springs) damaged-groups)
+         \#  (if-some [damaged-group (first damaged-groups)]
+               (if (and (every? #{\# \?} (take damaged-group springs))
+                        (#{\. \?} (nth springs damaged-group nil)))
+                 (recur (drop (inc damaged-group) springs)
+                        (rest damaged-groups))
+                 0)
+               0)
+         \?  (let [springs-tail (rest springs)]
+               (transduce (map #(possible-arrangements (cons % springs-tail)
+                                                       damaged-groups))
+                          +
+                          [\. \#])))))))
 
 (defn answer-part-1 [condition-records]
-  (transduce (map #(count (apply possible-arrangements %)))
+  (transduce (map #(apply possible-arrangements %))
              +
              condition-records))
 
@@ -45,10 +55,13 @@
 
 ;;;; Part 2
 
-(defn answer-part-2 [x]
-  x)
+(defn unfold-condition-record [[springs damaged-groups]]
+  [(str/join "?" (repeat 5 springs)) (flatten (repeat 5 damaged-groups))])
+
+(defn answer-part-2 [condition-records]
+  (answer-part-1 (map unfold-condition-record condition-records)))
 
 (core/part 2
   parse-input answer-part-2 *file*
-  #_[:sample1]
-  [:input])
+  [:sample1 525152]
+  [:input 33992866292225])
