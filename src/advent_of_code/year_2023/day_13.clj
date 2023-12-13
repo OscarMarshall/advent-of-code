@@ -21,15 +21,18 @@
             (count pre)))
         (map #(split-at % pattern) (range 1 (count pattern)))))
 
-(defn answer-part-1 [patterns]
+(defn answer [patterns find-fn]
   (transduce (map (fn [pattern]
-                    (if-some [result (or (find-mirror-value (reflect pattern))
-                                         (* (find-mirror-value pattern) 100))]
+                    (if-some [result (or (find-fn (reflect pattern))
+                                         (* (find-fn pattern) 100))]
                       result
                       (do (prn pattern)
                           0))))
              +
              patterns))
+
+(defn answer-part-1 [patterns]
+  (answer patterns find-mirror-value))
 
 (core/part 1
   parse-input answer-part-1 *file*
@@ -39,10 +42,20 @@
 
 ;;;; Part 2
 
-(defn answer-part-2 [x]
-  x)
+(defn find-smudged-mirror-value [pattern]
+  (some (fn [[pre post]]
+          (when (= ((frequencies (map =
+                                      (apply concat (reverse pre))
+                                      (apply concat post)))
+                    false)
+                   1)
+            (count pre)))
+        (map #(split-at % pattern) (range 1 (count pattern)))))
+
+(defn answer-part-2 [patterns]
+  (answer patterns find-smudged-mirror-value))
 
 (core/part 2
   parse-input answer-part-2 *file*
-  #_[:sample1]
-  [:input])
+  [:sample1 400]
+  [:input 36919])
