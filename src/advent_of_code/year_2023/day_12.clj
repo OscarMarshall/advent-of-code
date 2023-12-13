@@ -16,31 +16,22 @@
 (def possible-arrangements
   (memoize
    (fn [springs damaged-groups]
-     (if (= (count springs)
+     (if (< (count springs)
             (+ (apply + damaged-groups) (dec (count damaged-groups))))
-       (if (every? identity
-                   (map #(%1 %2)
-                        (flatten (interpose [#{\. \?}]
-                                            (map #(repeat % #{\# \?})
-                                                 damaged-groups)))
-                        springs))
-         1
-         0)
+       0
        (case (first springs)
          nil (if (empty? damaged-groups) 1 0)
          \.  (recur (rest springs) damaged-groups)
          \#  (if-some [damaged-group (first damaged-groups)]
                (if (and (every? #{\# \?} (take damaged-group springs))
-                        (#{\. \?} (nth springs damaged-group nil)))
+                        (#{\. \?} (nth springs damaged-group \.)))
                  (recur (drop (inc damaged-group) springs)
                         (rest damaged-groups))
                  0)
                0)
          \?  (let [springs-tail (rest springs)]
-               (transduce (map #(possible-arrangements (cons % springs-tail)
-                                                       damaged-groups))
-                          +
-                          [\. \#])))))))
+               (+ (possible-arrangements (cons \# springs-tail) damaged-groups)
+                  (possible-arrangements springs-tail damaged-groups))))))))
 
 (defn answer-part-1 [condition-records]
   (transduce (map #(apply possible-arrangements %))
