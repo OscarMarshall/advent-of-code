@@ -7,6 +7,11 @@
 
 (defn parse-input [input] input)
 
+(comment
+  (core/current-parsed-input :sample1)
+  (core/current-parsed-input)
+  )
+
 ;;;; Part 1
 
 (defn answer-part-1 [x]
@@ -14,8 +19,8 @@
 
 (core/part 1
   parse-input answer-part-1 *file*
-  #_[:sample1]
-  [:input])
+  [:sample1 #_?]
+  [:input #_(core/current-answer 1)])
 
 
 ;;;; Part 2
@@ -25,5 +30,5 @@
 
 (core/part 2
   parse-input answer-part-2 *file*
-  #_[:sample1]
-  [:input])
+  [:sample1 #_?]
+  [:input #_(core/current-answer 2)])
