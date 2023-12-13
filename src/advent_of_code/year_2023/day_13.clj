@@ -1,35 +1,24 @@
 (ns advent-of-code.year-2023.day-13
   (:require [advent-of-code.core :as core]
-            [clojure.string :as str]
-            [clojure.math.combinatorics :as combo]))
+            [clojure.string :as str]))
 
 (println "# Day 13")
 
 (set! *warn-on-reflection* true)
 
-(defn parse-input [input]
-  (map #(mapv vec (str/split-lines %)) (str/split input #"\n\n")))
+(defn parse-input [input] (map str/split-lines (str/split input #"\n\n")))
 
 ;;;; Part 1
 
-(defn reflect [pattern]
-  (apply mapv vector pattern))
+(defn reflect [pattern] (apply map list pattern))
 
 (defn find-mirror-value [pattern]
   (some (fn [[pre post]]
-          (when (every? identity (map = (reverse pre) post))
-            (count pre)))
+          (when (every? true? (map = (reverse pre) post)) (count pre)))
         (map #(split-at % pattern) (range 1 (count pattern)))))
 
 (defn answer [patterns find-fn]
-  (transduce (map (fn [pattern]
-                    (if-some [result (or (find-fn (reflect pattern))
-                                         (* (find-fn pattern) 100))]
-                      result
-                      (do (prn pattern)
-                          0))))
-             +
-             patterns))
+  (transduce (map #(or (find-fn (reflect %)) (* (find-fn %) 100))) + patterns))
 
 (defn answer-part-1 [patterns]
   (answer patterns find-mirror-value))
@@ -44,16 +33,14 @@
 
 (defn find-smudged-mirror-value [pattern]
   (some (fn [[pre post]]
-          (when (= ((frequencies (map =
-                                      (apply concat (reverse pre))
-                                      (apply concat post)))
-                    false)
+          (when (= (count (filter false? (map =
+                                              (apply concat (reverse pre))
+                                              (apply concat post))))
                    1)
             (count pre)))
         (map #(split-at % pattern) (range 1 (count pattern)))))
 
-(defn answer-part-2 [patterns]
-  (answer patterns find-smudged-mirror-value))
+(defn answer-part-2 [patterns] (answer patterns find-smudged-mirror-value))
 
 (core/part 2
   parse-input answer-part-2 *file*
