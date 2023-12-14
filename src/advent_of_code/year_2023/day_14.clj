@@ -9,15 +9,12 @@
 
 (defn parse-input [input] (mapv vec (str/split-lines input)))
 
-(comment
-  (core/current-parsed-input :sample1)
-  (core/current-parsed-input)
-  )
-
 ;;;; Part 1
 
-(defn reflect-grid [grid]
-  (apply mapv vector grid))
+(defn rotate-grid-cw [grid n]
+  (if (zero? n)
+    grid
+    (recur (apply mapv #(vec (reverse %&)) grid) (dec n))))
 
 (defn tilt-row-left [row]
   (vec (mapcat #(reverse (sort %)) (medley/partition-after #{\#} row))))
@@ -31,24 +28,32 @@
                 (reverse grid) (range 1 ##Inf))))
 
 (defn answer-part-1 [grid]
-  (total-load (reflect-grid (tilt-grid-left (reflect-grid grid)))))
+  (total-load (rotate-grid-cw (tilt-grid-left (rotate-grid-cw grid 3)) 1)))
 
 (core/part 1
   parse-input answer-part-1 *file*
   [:sample1 136]
   [:input 112048])
 
-(comment
-  (core/current-answer 1 :sample1)
-  )
-
 
 ;;;; Part 2
 
-(defn answer-part-2 [x]
-  x)
+(def spin-cycle
+  (memoize
+   (fn [grid]
+     (rotate-grid-cw (nth (iterate #(rotate-grid-cw (tilt-grid-left %) 1)
+                                   (rotate-grid-cw grid 3))
+                          4)
+                     1))))
+
+(defn answer-part-2 [grid]
+  (loop [grid grid, spins 1000000000, seen {}]
+    (if (zero? spins) (total-load grid)
+      (if-some [previous-spins (seen grid)]
+        (recur grid (long (rem spins (- previous-spins spins))) {})
+        (recur (spin-cycle grid) (dec spins) (assoc seen grid spins))))))
 
 (core/part 2
   parse-input answer-part-2 *file*
-  [:sample1 #_?]
-  [:input #_(core/current-answer 2)])
+  [:sample1 64]
+  [:input 105606])
