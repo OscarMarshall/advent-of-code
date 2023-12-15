@@ -6,7 +6,7 @@
 
 (set! *warn-on-reflection* true)
 
-(defn parse-input [input] (str/split input #","))
+(defn parse-input [input] (str/split (str/replace input "\n" "") #","))
 
 (comment
   (core/current-parsed-input :sample1)
@@ -29,8 +29,8 @@
 
 (core/part 1
   parse-input answer-part-1 *file*
-  [:sample1 52]
-  [:input 517847])
+  [:sample1 1320]
+  [:input [not= 517847] 517965])
 
 
 ;;;; Part 2
