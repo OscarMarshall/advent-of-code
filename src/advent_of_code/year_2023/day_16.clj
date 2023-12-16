@@ -46,8 +46,8 @@
 (defn next-coordinate [coordinates direction]
   (mapv + coordinates (direction->vector direction)))
 
-(defn answer-part-1 [layout]
-  (loop [beams [[[0 0] :right]], seen #{}]
+(defn energized-tiles [layout starting-beam]
+  (loop [beams [starting-beam], seen #{}]
     (if-some [[coordinates direction :as beam] (first beams)]
       (if (seen beam)
         (recur (rest beams) seen)
@@ -63,6 +63,8 @@
                  (conj seen beam))))
       (count (distinct (map first seen))))))
 
+(defn answer-part-1 [layout] (energized-tiles layout [[0 0] :right]))
+
 (core/part 1
   parse-input answer-part-1 *file*
   [:sample1 46]
@@ -71,10 +73,19 @@
 
 ;;;; Part 2
 
-(defn answer-part-2 [x]
-  x)
+(defn answer-part-2 [layout]
+  (let [height (count layout)
+        width  (count (first layout))]
+    (transduce (comp cat
+                     (map #(energized-tiles layout %)))
+               max
+               0
+               (concat (for [row (range height)]
+                         [[[row 0] :right] [[row (dec width)] :right]])
+                       (for [column (range width)]
+                         [[[0 column] :down] [[(dec height) column] :up]])))))
 
 (core/part 2
   parse-input answer-part-2 *file*
-  [:sample1 #_51]
-  [:input #_(core/current-answer 2)])
+  [:sample1 51]
+  [:input 7313])
