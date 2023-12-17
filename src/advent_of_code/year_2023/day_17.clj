@@ -46,27 +46,31 @@
                                                (state->next-states state))
                                          seen)))))))))
 
-(defn state->next-states [[heat-loss-acc [coordinates direction]] grid]
-  (mapcat (fn [direction]
-            (let [coordinateses (->> (iterate #(next-coordinates % direction)
+(defn make-state->next-states [grid min max]
+  (fn [[heat-loss-acc [coordinates direction]]]
+    (mapcat (fn [direction]
+              (let [coordinateses (->> (iterate #(next-coordinates % direction)
                                                 coordinates)
-                                       (drop 1)
-                                       (take 3))
-                  heat-losses   (rest (reductions + 0 (keep #(get-in grid %)
-                                                            coordinateses)))]
-              (map (fn [heat-loss coordinates]
-                     [(+ heat-loss-acc heat-loss) [coordinates direction]])
-                   heat-losses
-                   coordinateses)))
-          (previous-direction->directions direction)))
+                                       rest
+                                       (take max))
+                    heat-losses   (rest (reductions + 0 (keep #(get-in grid %)
+                                                              coordinateses)))]
+                (sequence (comp (map (fn [heat-loss coordinates]
+                                       [(+ heat-loss-acc heat-loss)
+                                        [coordinates direction]]))
+                                (drop (dec min)))
+                          heat-losses
+                          coordinateses)))
+            (previous-direction->directions direction))))
 
-(defn lowest-heat-loss [grid]
+(defn lowest-heat-loss [grid min max]
   (let [target [(dec (count grid)) (dec (count (first grid)))]]
     (some (fn [[heat-loss [coordinates]]]
             (when (= coordinates target) heat-loss))
-          (dijkstra-seq #(state->next-states % grid) [0 [[0 0] nil]]))))
+          (dijkstra-seq (make-state->next-states grid min max)
+                        [0 [[0 0] nil]]))))
 
-(defn answer-part-1 [grid] (lowest-heat-loss grid))
+(defn answer-part-1 [grid] (lowest-heat-loss grid 1 3))
 
 (core/part 1
   parse-input answer-part-1 *file*
@@ -76,10 +80,10 @@
 
 ;;;; Part 2
 
-(defn answer-part-2 [x]
-  x)
+(defn answer-part-2 [grid] (lowest-heat-loss grid 4 10))
 
 (core/part 2
   parse-input answer-part-2 *file*
-  [:sample1 #_?]
-  [:input #_(core/current-answer 2)])
+  [:sample1 94]
+  [:sample2 71]
+  [:input 788])
