@@ -30,7 +30,7 @@
   (mapv + coordinates (direction->vector direction)))
 
 (defn dig
-  ([plans] (into #{} q(dig plans [0 0])))
+  ([plans] (into #{} (dig plans [0 0])))
   ([[[direction distance] & plans] coordinates]
    (when direction
      (let [dug-coordinates (take distance
@@ -48,9 +48,9 @@
         right               (apply max (map second coordinates))
         columns             (range left (inc right))
         rows                (range top (inc bottom))
-        edge-coordinates    (concat (map vector (repeat -1) columns)
+        edge-coordinates    (concat (map vector (repeat (dec top)) columns)
                                     (map vector (repeat (inc bottom)) columns)
-                                    (map vector rows (repeat -1))
+                                    (map vector rows (repeat (dec left)))
                                     (map vector rows (repeat (inc right))))
         in-range?           (fn [[row column]]
                               (and (<= left column right)
@@ -66,10 +66,40 @@
                                   (recur (into (pop queue)
                                                (remove seen neighbors))
                                          (into seen neighbors)))))]
+    #_(str/join "\n"
+              (map (fn [row]
+                     (str/join (map (fn [column]
+                                      (if-not (outside-coordinates [row column])
+                                        1
+                                        0))
+                                    columns)))
+                   rows))
     (apply + (for [row    rows
                    column columns
                    :when  (not (outside-coordinates [row column]))]
                1))))
+
+(defn dig-site-string [coordinates]
+  (let [top                 (apply min (map first coordinates))
+        left                (apply min (map second coordinates))
+        bottom              (apply max (map first coordinates))
+        right               (apply max (map second coordinates))
+        columns             (range left (inc right))
+        rows                (range top (inc bottom))]
+    (str/join "\n" (map (fn [row]
+                          (str/join (map (fn [column]
+                                           (if (coordinates [row column])
+                                             1
+                                             0))
+                                         columns)))
+                        rows))
+    ))
+
+(comment
+  (println (dig-site-string (dig (core/current-parsed-input))))
+
+  (println (core/current-answer 1))
+  )
 
 (defn answer-part-1 [plans]
   (dug-out-size (dig plans)))
@@ -77,15 +107,15 @@
 (core/part 1
   parse-input answer-part-1 *file*
   [:sample1 62]
-  [:input 7494])
+  [:input [not= 7494] 36725])
 
 
 ;;;; Part 2
 
-(defn answer-part-2 [x]
+#_(defn answer-part-2 [x]
   x)
 
-(core/part 2
+#_(core/part 2
   parse-input answer-part-2 *file*
   [:sample1 #_?]
   [:input #_(core/current-answer 2)])
