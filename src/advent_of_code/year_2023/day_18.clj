@@ -21,85 +21,48 @@
 ;;;; Part 1
 
 (def direction->vector
-  {:up    [-1 0]
-   :right [0 1]
-   :down  [1 0]
-   :left  [0 -1]})
+  {:up    [0 -1]
+   :right [1 0]
+   :down  [0 1]
+   :left  [-1 0]})
 
 (defn next-coordinates [coordinates direction]
   (mapv + coordinates (direction->vector direction)))
 
-(defn dig
-  ([plans] (into #{} (dig plans [0 0])))
-  ([[[direction distance] & plans] coordinates]
-   (when direction
-     (let [dug-coordinates (take distance
-                                 (rest (iterate #(next-coordinates % direction)
-                                                coordinates)))]
-       (concat dug-coordinates (dig plans (last dug-coordinates)))))))
+(defn dig [plans]
+  (reduce (fn [cuts [direction distance]]
+            (let [start (or (peek (peek cuts)) [0 0])]
+              (conj cuts
+                    [start
+                     (mapv +
+                           start
+                           (mapv *
+                                 (repeat distance)
+                                 (direction->vector direction)))])))
+          []
+          plans))
 
 (defn neighbors [coordinates]
   (into #{} (map #(mapv + coordinates %)) [[-1 0] [0 -1] [0 1] [1 0]]))
 
-(defn dug-out-size [coordinates]
-  (let [top                 (apply min (map first coordinates))
-        left                (apply min (map second coordinates))
-        bottom              (apply max (map first coordinates))
-        right               (apply max (map second coordinates))
-        columns             (range left (inc right))
-        rows                (range top (inc bottom))
-        edge-coordinates    (concat (map vector (repeat (dec top)) columns)
-                                    (map vector (repeat (inc bottom)) columns)
-                                    (map vector rows (repeat (dec left)))
-                                    (map vector rows (repeat (inc right))))
-        in-range?           (fn [[row column]]
-                              (and (<= left column right)
-                                   (<= top row bottom)))
-        outside-coordinates (loop [queue (medley/queue edge-coordinates)
-                                   seen  (set edge-coordinates)]
-                              (if (empty? queue)
-                                seen
-                                (let [neighbors
-                                      (filter #(and (in-range? %)
-                                                    (not (coordinates %)))
-                                              (neighbors (peek queue)))]
-                                  (recur (into (pop queue)
-                                               (remove seen neighbors))
-                                         (into seen neighbors)))))]
-    #_(str/join "\n"
-              (map (fn [row]
-                     (str/join (map (fn [column]
-                                      (if-not (outside-coordinates [row column])
-                                        1
-                                        0))
-                                    columns)))
-                   rows))
-    (apply + (for [row    rows
-                   column columns
-                   :when  (not (outside-coordinates [row column]))]
-               1))))
+(defn cut-left [[[_ x] [_ _]]] x)
+(defn cut-right [[[_ _] [_ x]]] x)
+(defn cut-top [[[x _] [_ _]]] x)
 
-(defn dig-site-string [coordinates]
-  (let [top                 (apply min (map first coordinates))
-        left                (apply min (map second coordinates))
-        bottom              (apply max (map first coordinates))
-        right               (apply max (map second coordinates))
-        columns             (range left (inc right))
-        rows                (range top (inc bottom))]
-    (str/join "\n" (map (fn [row]
-                          (str/join (map (fn [column]
-                                           (if (coordinates [row column])
-                                             1
-                                             0))
-                                         columns)))
-                        rows))
-    ))
+(defn remove-horizontal-range [cuts
+                               [[row1 column1] [_ column2] :as cut]
+                               left
+                               right]
+  (into (disj cuts cut)
+        (concat (when (< column1 left) [[[row1 column1] [row1 (dec left)]]])
+                (when (> column2 right)
+                  [[[row1 (inc right)] [row1 column2]]]))))
 
-(comment
-  (println (dig-site-string (dig (core/current-parsed-input))))
-
-  (println (core/current-answer 1))
-  )
+(defn dug-out-size [cuts]
+  (transduce (map (fn [[[x1 y1] [x2 y2]]]
+                    (+ (- (* x1 y2) (* x2 y1)) (abs (+ (- x2 x1) (- y2 y1))))))
+             (completing + #(inc (/ % 2)))
+             cuts))
 
 (defn answer-part-1 [plans]
   (dug-out-size (dig plans)))
@@ -112,10 +75,19 @@
 
 ;;;; Part 2
 
-#_(defn answer-part-2 [x]
-  x)
+(def hex-string->direction
+  {"3" :up
+   "1" :down
+   "2" :left
+   "0" :right})
 
-#_(core/part 2
+(defn answer-part-2 [plans]
+  (answer-part-1 (map (fn [[_ _ color]]
+                        [(hex-string->direction (subs color 6))
+                         (Long/parseLong (subs color 1 6) 16)])
+                      plans)))
+
+(core/part 2
   parse-input answer-part-2 *file*
-  [:sample1 #_?]
-  [:input #_(core/current-answer 2)])
+  [:sample1 952408144115]
+  [:input 97874103749720])
