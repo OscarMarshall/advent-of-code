@@ -6,13 +6,11 @@
 
 (set! *warn-on-reflection* true)
 
-(def op->fn {"<" <, ">" >})
-
 (defn parse-rule [rule]
   (condp re-matches rule
     #"([xmas])([<>])(\d+):([A-z]+)"
     :>> (fn [[_ & groups]]
-          (mapv #(%1 %2) [keyword op->fn parse-long keyword] groups))
+          (mapv #(%1 %2) [keyword keyword parse-long keyword] groups))
 
     #"[A-z]+" :>> keyword))
 
@@ -32,14 +30,16 @@
 
 ;;;; Part 1
 
+(def op->fn {:< <, :> >})
+
 (defn accepted? [part workflows]
   (loop [workflow-name :in]
     (case workflow-name
       :A true
       :R false
       (let [workflow (workflows workflow-name)]
-        (recur (or (some (fn [[category op rhs dest]]
-                           (when (op (category part) rhs) dest))
+        (recur (or (some (fn [[rating op rhs dest]]
+                           (when ((op->fn op) (rating part) rhs) dest))
                          (butlast workflow))
                    (peek workflow)))))))
 
@@ -54,10 +54,66 @@
 
 ;;;; Part 2
 
-(defn answer-part-2 [x]
-  x)
+(defn combinations
+  ([workflows]
+   (combinations :in (zipmap [:x :m :a :s] (repeat [1 4000])) workflows))
+  ([workflow-name possible-ratings workflows]
+   (case workflow-name
+     :A (transduce (map (fn [[a b]] (inc (- b a)))) * (vals possible-ratings))
+     :R 0
+     (second (reduce (fn [[possible-ratings acc] rule]
+                       (if (keyword? rule)
+                         [possible-ratings
+                          (+ acc
+                             (combinations rule possible-ratings workflows))]
+                         (let [[rating op rhs dest] rule
+                               [low high]           (rating possible-ratings)]
+                           (case op
+                             :< (cond
+                                  (< high rhs)
+                                  (reduced [possible-ratings
+                                            (+ acc
+                                               (combinations dest
+                                                             possible-ratings
+                                                             workflows))])
+
+                                  (< low rhs)
+                                  [(assoc-in possible-ratings [rating 0] rhs)
+                                   (+ acc
+                                      (combinations dest
+                                                    (assoc-in possible-ratings
+                                                              [rating 1]
+                                                              (dec rhs))
+                                                    workflows))]
+
+                                  :else
+                                  [possible-ratings acc])
+                             :> (cond
+                                  (> low rhs)
+                                  (reduced [possible-ratings
+                                            (+ acc
+                                               (combinations dest
+                                                             possible-ratings
+                                                             workflows))])
+
+                                  (> high rhs)
+                                  [(assoc-in possible-ratings [rating 1] rhs)
+                                   (+ acc
+                                      (combinations dest
+                                                    (assoc-in possible-ratings
+                                                              [rating 0]
+                                                              (inc rhs))
+                                                    workflows))]
+
+                                  :else
+                                  [possible-ratings acc])))))
+                     [possible-ratings 0]
+                     (workflows workflow-name))))))
+
+(defn answer-part-2 [{:keys [workflows]}]
+  (combinations workflows))
 
 (core/part 2
   parse-input answer-part-2 *file*
-  [:sample1 #_?]
-  [:input #_(core/current-answer 2)])
+  [:sample1 167409079868000]
+  [:input 131796824371749])
