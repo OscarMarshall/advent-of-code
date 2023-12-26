@@ -25,7 +25,7 @@
 
 (defn voxel-height [[_ _ z]] z)
 
-(defn drop-brick [[resting-bricks highest-points] voxels]
+(defn drop-brick [[resting-bricks highest-points dropped-bricks] voxels]
   (let [lowest-voxel  (apply min (map voxel-height voxels))
         highest-point (apply max
                              0
@@ -35,31 +35,44 @@
     [(conj resting-bricks dropped-brick)
      (into highest-points
            (map (juxt voxel-column voxel-height))
-           dropped-brick)]))
+           dropped-brick)
+     (cond-> dropped-bricks (pos? drop-height) inc)]))
 
 (defn drop-bricks [bricks]
-  (first (reduce drop-brick [[] {}] bricks)))
+  (reduce drop-brick [[] {} 0] bricks))
 
 (defn answer-part-1 [bricks]
-  (let [dropped-bricks (drop-bricks (mapv brick->voxels
-                                          (sort-by #(get-in % [0 2]) bricks)))]
+  (let [dropped-bricks (->> bricks
+                            (sort-by #(get-in % [0 2]))
+                            (mapv brick->voxels)
+                            drop-bricks
+                            first)]
     (count (filter #(let [bricks1 (concat (subvec dropped-bricks 0 %)
                                           (subvec dropped-bricks (inc %)))]
-                      (= (drop-bricks bricks1) bricks1))
+                      (= (first (drop-bricks bricks1)) bricks1))
                    (range (count dropped-bricks))))))
 
 (core/part 1
   parse-input answer-part-1 *file*
-  [:sample1 #_5]
+  [:sample1 5]
   [:input 461])
 
 
 ;;;; Part 2
 
-(defn answer-part-2 [x]
-  x)
+(defn answer-part-2 [bricks]
+  (let [dropped-bricks (->> bricks
+                            (sort-by #(get-in % [0 2]))
+                            (mapv brick->voxels)
+                            drop-bricks
+                            first)]
+    (transduce (map #(nth (drop-bricks (concat (subvec dropped-bricks 0 %)
+                                               (subvec dropped-bricks (inc %))))
+                          2))
+               +
+               (range (count dropped-bricks)))))
 
 (core/part 2
   parse-input answer-part-2 *file*
-  [:sample1 #_?]
-  [:input #_(core/current-answer 2)])
+  [:sample1 7]
+  [:input 74074])
