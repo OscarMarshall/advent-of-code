@@ -28,15 +28,15 @@
             (filter #(garden-plots (get-in chart %)))
             neighbor-vectors))
 
-(defn possible-locations [chart]
+(defn possible-locations [chart start]
   (iterate (fn [locations]
              (into #{}
                    (mapcat #(possible-steps chart %))
                    locations))
-           #{(starting-location chart)}))
+           #{start}))
 
 (defn answer-part-1 [chart]
-  (count (nth (possible-locations chart) 64)))
+  (count (nth (possible-locations chart (starting-location chart)) 64)))
 
 (core/part 1
   parse-input answer-part-1 *file*
@@ -45,9 +45,53 @@
 
 ;;;; Part 2
 
-(defn answer-part-2 [x]
-  x)
+(defn answer-part-2 [chart]
+  (let [edge-length (dec (quot 26501365 (count chart)))
+        edge-offset (mod 26501365 (count chart))]
+    (+
+     ;; #..
+     ;; ...
+     ;; ...
+     (* edge-length
+        (count (nth (possible-locations chart [130 130]) edge-offset)))
+     ;; .#.
+     ;; ...
+     ;; ...
+     (count (nth (possible-locations chart [130 65]) (dec (count chart))))
+     ;; ..#
+     ;; ...
+     ;; ...
+     (* edge-length
+        (count (nth (possible-locations chart [130 0]) edge-offset)))
+     ;; ...
+     ;; #..
+     ;; ...
+     (count (nth (possible-locations chart [65 130]) (dec (count chart))))
+     ;; ...
+     ;; .#.
+     ;; ...
+     (* edge-length
+        edge-length
+        (count (nth (possible-locations chart [65 65]) (dec (count chart)))))
+     ;; ...
+     ;; ..#
+     ;; ...
+     (count (nth (possible-locations chart [65 0]) (dec (count chart))))
+     ;; ...
+     ;; ...
+     ;; #..
+     (* edge-length
+        (count (nth (possible-locations chart [0 130]) edge-offset)))
+     ;; ...
+     ;; ...
+     ;; .#.
+     (count (nth (possible-locations chart [0 65]) (dec (count chart))))
+     ;; ...
+     ;; ...
+     ;; ..#
+     (* edge-length
+        (count (nth (possible-locations chart [0 0]) edge-offset))))))
 
 (core/part 2
   parse-input answer-part-2 *file*
-  [:input #_(core/current-answer 2)])
+  [:input 314631336880811])
