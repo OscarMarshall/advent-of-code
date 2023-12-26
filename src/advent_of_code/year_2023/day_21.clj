@@ -2,7 +2,9 @@
   (:require [advent-of-code.core :as core]
             [clojure.string :as str]
             [clojure.math.combinatorics :as combo]
-            [medley.core :as medley]))
+            [medley.core :as medley]
+            [clojure.math :as math]
+            [clojure.set :as set]))
 
 (println "# Day 21")
 
@@ -45,54 +47,59 @@
 
 ;;;; Part 2
 
+(defn print-possible-locations [chart locations]
+  (println (str/join "\n"
+                     (map #(apply str %)
+                          (reduce #(assoc-in %1 %2 \O) chart locations)))))
+
+(comment
+  (let [chart            (core/current-parsed-input)
+        even-edge-length (quot 26501365 (count chart))
+        odd-edge-length  (dec even-edge-length)
+        locations-seq    (drop 130 (possible-locations chart [65 65]))
+        even-locations   (first locations-seq)
+        odd-locations    (second locations-seq)
+
+        locs (nth (possible-locations chart [130 65]) 130)]
+    #_(+ half-locations
+         (* odd-edge-length odd-edge-length (count odd-locations))
+         (* even-edge-length even-edge-length (count even-locations)))
+    (print-possible-locations chart odd-locations)
+    #_(set/difference locs odd-locations))
+
+  )
+
 (defn answer-part-2 [chart]
-  (let [edge-length (dec (quot 26501365 (count chart)))
-        edge-offset (mod 26501365 (count chart))]
-    (+
-     ;; #..
-     ;; ...
-     ;; ...
-     (* edge-length
-        (count (nth (possible-locations chart [130 130]) edge-offset)))
-     ;; .#.
-     ;; ...
-     ;; ...
-     (count (nth (possible-locations chart [130 65]) (dec (count chart))))
-     ;; ..#
-     ;; ...
-     ;; ...
-     (* edge-length
-        (count (nth (possible-locations chart [130 0]) edge-offset)))
-     ;; ...
-     ;; #..
-     ;; ...
-     (count (nth (possible-locations chart [65 130]) (dec (count chart))))
-     ;; ...
-     ;; .#.
-     ;; ...
-     (* (* edge-length edge-length)
-        (count (nth (possible-locations chart [65 65]) (dec (count chart)))))
-     (* (* (inc edge-length) (inc edge-length))
-        (count (nth (possible-locations chart [65 65]) (count chart))))
-     ;; ...
-     ;; ..#
-     ;; ...
-     (count (nth (possible-locations chart [65 0]) (dec (count chart))))
-     ;; ...
-     ;; ...
-     ;; #..
-     (* edge-length
-        (count (nth (possible-locations chart [0 130]) edge-offset)))
-     ;; ...
-     ;; ...
-     ;; .#.
-     (count (nth (possible-locations chart [0 65]) (dec (count chart))))
-     ;; ...
-     ;; ...
-     ;; ..#
-     (* edge-length
-        (count (nth (possible-locations chart [0 0]) edge-offset))))))
+  (let [even-edge-length (quot 26501365 (count chart))
+        odd-edge-length  (dec even-edge-length)
+        locations-seq    (drop 130 (possible-locations chart [65 65]))
+        even-locations   (first locations-seq)
+        odd-locations    (second locations-seq)]
+    (+ (apply + (map (fn [starting-location]
+                       (let [locations-seq
+                             (drop 64
+                                   (possible-locations chart starting-location))
+
+                             small-edge (first locations-seq)
+                             large-edge (nth locations-seq 131)]
+                         (+ (* even-edge-length (count small-edge))
+                            (* odd-edge-length (count large-edge)))))
+                     (combo/cartesian-product [0 130] [0 130])))
+       (apply + (map (fn [starting-location]
+                       (count (nth (possible-locations chart starting-location)
+                                   130)))
+                     [[130 65] [65 0] [0 65] [65 130]]))
+       (* odd-edge-length odd-edge-length (count odd-locations))
+       (* even-edge-length even-edge-length (count even-locations)))))
 
 (core/part 2
   parse-input answer-part-2 *file*
-  [:input [> 314631336880811] [< 629258745301963] 627955357120811])
+  [:input
+   [> 314631336880811]
+   [< 629258745301963]
+   [> 627955357120811]
+   [not= 627955370067979]
+   [not= 627961524847254]
+   [not= 627960747389133]
+   [not= 627960775932622]
+   627960775905777])
