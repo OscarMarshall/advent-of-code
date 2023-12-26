@@ -67,46 +67,29 @@
     (medley/map-vals #(initialize-module % sources) modules)))
 
 (defn propagate-pulses [modules pulses]
-  (loop [modules modules, pulses (medley/queue pulses), pulse-counts [0 0]]
-    (if (empty? pulses)
-      [modules pulse-counts]
-      (let [[source high-pulse destination] (peek pulses)
-            [modules new-pulses]            (pulse-module modules
-                                                          destination
-                                                          source
-                                                          high-pulse)]
-        (recur modules
-               (into (pop pulses) new-pulses)
-               (update pulse-counts (if high-pulse 1 0) inc))))))
+  (loop [modules modules, pulses pulses, i 0]
+    (if-some [[source high-pulse destination] (nth pulses i nil)]
+      (let [[modules new-pulses] (pulse-module modules
+                                               destination
+                                               source
+                                               high-pulse)]
+        (recur modules (into pulses new-pulses) (inc i)))
+      [modules pulses])))
 
-(defn press-button [modules n]
-  (loop [modules (initialize-modules modules), n n, pulse-counts [0 0], seen {}]
-    (cond
-      (zero? n)      pulse-counts
-      (seen modules) (let [[prev-n prev-pulse-counts] (seen modules)
-                           cycle-length               (- prev-n n)]
-                       (recur modules
-                              (rem n cycle-length)
-                              (mapv +
-                                    pulse-counts
-                                    (mapv #(* (quot n cycle-length) %)
-                                          (mapv -
-                                                pulse-counts
-                                                prev-pulse-counts)))
-                              {}))
-      :else          (let [seen
-                           (assoc seen modules [n pulse-counts])
+(defn press-button [modules]
+  (propagate-pulses modules [[:button false :broadcaster]]))
 
-                           [modules new-pulse-counts]
-                           (propagate-pulses modules
-                                             [[:button false :broadcaster]])]
-                       (recur modules
-                              (dec n)
-                              (mapv + pulse-counts new-pulse-counts)
-                              seen)))))
+(defn button-presses [modules]
+  (iterate (fn [[modules _]] (press-button modules))
+           [(initialize-modules modules)]))
 
 (defn answer-part-1 [modules]
-  (apply * (press-button modules 1000)))
+  (transduce (comp (take 1000) (mapcat second))
+             (fn
+               ([[low high]] (* low high))
+               ([acc [_ high _]] (update acc (if high 1 0) inc)))
+             [0 0]
+             (rest (button-presses modules))))
 
 (core/part 1
   parse-input answer-part-1 *file*
@@ -117,10 +100,26 @@
 
 ;;;; Part 2
 
-(defn answer-part-2 [x]
-  x)
+(defmulti current-signal (fn [{:keys [type]}] type))
+(defmethod current-signal :flip-flop [{:keys [on]}] on)
+(defmethod current-signal :conjunction [{:keys [signals]}]
+  (boolean (some false? (vals signals))))
+
+(defn cycle-length [modules source high]
+  (->> (button-presses modules)
+       (take-while (fn [[_ pulses]]
+                     (not-any? (fn [[pulse-source pulse-high _]]
+                                 (and (= pulse-source source)
+                                      (= pulse-high high)))
+                               pulses)))
+       count))
+
+(defn answer-part-2 [modules]
+  (let [sources (gather-sources modules)]
+    (transduce (map #(cycle-length modules % true))
+               *
+               (sources (first (sources :rx))))))
 
 (core/part 2
   parse-input answer-part-2 *file*
-  [:sample1 #_?]
-  [:input #_(core/current-answer 2)])
+  [:input 230402300925361])
