@@ -70,8 +70,10 @@
      ;; ...
      ;; .#.
      ;; ...
-     (* (+ (* edge-length edge-length) (* (dec edge-length) (dec edge-length)))
+     (* (* edge-length edge-length)
         (count (nth (possible-locations chart [65 65]) (dec (count chart)))))
+     (* (* (inc edge-length) (inc edge-length))
+        (count (nth (possible-locations chart [65 65]) (count chart))))
      ;; ...
      ;; ..#
      ;; ...
@@ -93,4 +95,4 @@
 
 (core/part 2
   parse-input answer-part-2 *file*
-  [:input [> 314631336880811] 629258745301963])
+  [:input [> 314631336880811] [< 629258745301963] 627955357120811])
