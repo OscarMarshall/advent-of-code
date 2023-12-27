@@ -1,4 +1,5 @@
 {:deps {dev.weavejester/medley         {:mvn/version "1.7.0"}
+        expresso/expresso              {:mvn/version "0.2.4"}
         org.clojure/core.logic         {:mvn/version "1.0.1"}
         org.clojure/core.match         {:mvn/version "1.0.1"}
         org.clojure/math.combinatorics {:mvn/version "0.2.0"}}}
