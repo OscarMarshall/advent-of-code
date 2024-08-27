@@ -8,11 +8,6 @@
 
 (defn parse-input [input] (mapv vec (str/split-lines input)))
 
-(comment
-  (core/current-parsed-input :sample1)
-  (core/current-parsed-input)
-  )
-
 ;;;; Part 1
 
 (def character->direction->next-directions
@@ -43,7 +38,7 @@
    :down  [1 0]
    :left  [0 -1]})
 
-(defn next-coordinate [coordinates direction]
+(defn next-coordinates [coordinates direction]
   (mapv + coordinates (direction->vector direction)))
 
 (defn energized-tiles [layout starting-beam]
@@ -56,7 +51,7 @@
                                       [character direction])]
           (recur (into (rest beams)
                        (comp (map (fn [direction]
-                                    [(next-coordinate coordinates direction)
+                                    [(next-coordinates coordinates direction)
                                      direction]))
                              (filter #(get-in layout (first %))))
                        next-directions)
@@ -80,10 +75,12 @@
                      (map #(energized-tiles layout %)))
                max
                0
-               (concat (for [row (range height)]
-                         [[[row 0] :right] [[row (dec width)] :right]])
-                       (for [column (range width)]
-                         [[[0 column] :down] [[(dec height) column] :up]])))))
+               (concat (map (fn [row]
+                              [[[row 0] :right] [[row (dec width)] :right]])
+                            (range height))
+                       (map (fn [column]
+                              [[[0 column] :down] [[(dec height) column] :up]])
+                            (range width))))))
 
 (core/part 2
   parse-input answer-part-2 *file*

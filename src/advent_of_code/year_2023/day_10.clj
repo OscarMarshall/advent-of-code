@@ -2,7 +2,8 @@
   (:require [advent-of-code.core :as core]
             [clojure.math.combinatorics :as combo]
             [clojure.set :as set]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [medley.core :as medley]))
 
 (println "# Day 10")
 
@@ -43,17 +44,18 @@
                     (trace grid current next)))))
 
 (defn start-coordinates [grid]
-  (first (filter #(= (get-in grid %) \S) (all-coordinates grid))))
+  (medley/find-first #(= (get-in grid %) \S) (all-coordinates grid)))
 
 (defn find-loop [grid]
   (let [start (start-coordinates grid)]
     (cons start
-          (first (eduction (filter #(connected? grid % start))
-                           (map (fn [neighbor]
-                                  (take-while #(not (= (get-in grid %) \S))
-                                              (trace grid start neighbor))))
-                           (filter #(connected? grid (last %) start))
-                           (neighbors grid start))))))
+          (medley/find-first
+           #(connected? grid (last %) start)
+           (eduction (filter #(connected? grid % start))
+                     (map (fn [neighbor]
+                            (take-while #(not (= (get-in grid %) \S))
+                                        (trace grid start neighbor))))
+                     (neighbors grid start))))))
 
 (defn answer-part-1 [grid] (/ (count (find-loop grid)) 2))
 

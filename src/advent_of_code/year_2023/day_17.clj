@@ -1,7 +1,6 @@
 (ns advent-of-code.year-2023.day-17
   (:require [advent-of-code.core :as core]
-            [clojure.string :as str]
-            [medley.core :as medley]))
+            [clojure.string :as str]))
 
 (println "# Day 17")
 

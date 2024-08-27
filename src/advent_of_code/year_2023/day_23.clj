@@ -9,11 +9,6 @@
 
 (defn parse-input [input] (mapv vec (str/split-lines input)))
 
-(comment
-  (core/current-parsed-input :sample1)
-  (core/current-parsed-input)
-  )
-
 ;;;; Part 1
 
 (defn all-locations [chart]
@@ -49,7 +44,7 @@
 (defn node-edges [location chart]
   (neighbors location chart))
 
-(defn analyze-chart [chart]
+(defn analyze-chart [chart next-node]
   (let [start [0 1]
         end   [(dec (count chart)) (- (count (first chart)) 2)]
         nodes (into #{start end}
@@ -77,7 +72,7 @@
                   (edges location))))))
 
 (defn answer-part-1 [chart]
-  (longest-path (analyze-chart chart)))
+  (longest-path (analyze-chart chart next-node)))
 
 (core/part 1
   parse-input answer-part-1 *file*
@@ -87,10 +82,17 @@
 
 ;;;; Part 2
 
-(defn answer-part-2 [x]
-  x)
+(defn next-node2 [from to chart nodes]
+  (loop [from from, to to, n 1]
+    (when (walkable-tiles (get-in chart to))
+      (if (nodes to)
+        [to n]
+        (recur to (first (remove #{from} (neighbors to chart))) (inc n))))))
+
+(defn answer-part-2 [chart]
+  (longest-path (analyze-chart chart next-node2)))
 
 (core/part 2
   parse-input answer-part-2 *file*
-  [:sample1 #_?]
-  [:input #_(core/current-answer 2)])
+  [:sample1 154]
+  [:input 6598])

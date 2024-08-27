@@ -24,7 +24,7 @@
                               "")
                             ".txt")))))
 
-(def function->symbol {= '=, < '<, > '>})
+(def function->symbol {= '=, not= 'not=, < '<, > '>})
 
 (defn check-assertions [result assertions]
   (doseq [assertion assertions]
@@ -44,7 +44,7 @@
       (check-assertions result assertions)))
 
 (defn part
-  {:style/indent [2]}
+  {:style/indent [1 3]}
   [part parse-input answer current-file & sections]
   (println "## Part" part)
   (run! #(print-section part parse-input answer current-file %) sections)

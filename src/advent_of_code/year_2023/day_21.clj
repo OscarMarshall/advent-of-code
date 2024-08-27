@@ -1,10 +1,8 @@
 (ns advent-of-code.year-2023.day-21
   (:require [advent-of-code.core :as core]
-            [clojure.string :as str]
             [clojure.math.combinatorics :as combo]
-            [medley.core :as medley]
-            [clojure.math :as math]
-            [clojure.set :as set]))
+            [clojure.string :as str]
+            [medley.core :as medley]))
 
 (println "# Day 21")
 
@@ -51,23 +49,6 @@
   (println (str/join "\n"
                      (map #(apply str %)
                           (reduce #(assoc-in %1 %2 \O) chart locations)))))
-
-(comment
-  (let [chart            (core/current-parsed-input)
-        even-edge-length (quot 26501365 (count chart))
-        odd-edge-length  (dec even-edge-length)
-        locations-seq    (drop 130 (possible-locations chart [65 65]))
-        even-locations   (first locations-seq)
-        odd-locations    (second locations-seq)
-
-        locs (nth (possible-locations chart [130 65]) 130)]
-    #_(+ half-locations
-         (* odd-edge-length odd-edge-length (count odd-locations))
-         (* even-edge-length even-edge-length (count even-locations)))
-    (print-possible-locations chart odd-locations)
-    #_(set/difference locs odd-locations))
-
-  )
 
 (defn answer-part-2 [chart]
   (let [even-edge-length (quot 26501365 (count chart))

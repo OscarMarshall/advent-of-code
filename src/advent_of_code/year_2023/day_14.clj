@@ -7,17 +7,17 @@
 
 (set! *warn-on-reflection* true)
 
-(defn parse-input [input] (mapv vec (str/split-lines input)))
+(defn parse-input [input] (str/split-lines input))
 
 ;;;; Part 1
 
 (defn rotate-grid-cw [grid n]
   (if (zero? n)
     grid
-    (recur (apply mapv #(vec (reverse %&)) grid) (dec n))))
+    (recur (apply mapv #(reverse %&) grid) (dec n))))
 
 (defn tilt-row-left [row]
-  (vec (mapcat #(reverse (sort %)) (medley/partition-after #{\#} row))))
+  (mapcat #(sort-by {\O 0, \. 1, \# 2} %) (medley/partition-after #{\#} row)))
 
 (defn tilt-grid-left [grid]
   (mapv tilt-row-left grid))
@@ -47,11 +47,14 @@
                      1))))
 
 (defn answer-part-2 [grid]
-  (loop [grid grid, spins 1000000000, seen {}]
-    (if (zero? spins) (total-load grid)
+  (loop [[grid & remaining-grids :as grids] (iterate spin-cycle grid)
+         spins                              1000000000
+         seen                               {}]
+    (if (zero? spins)
+      (total-load grid)
       (if-some [previous-spins (seen grid)]
-        (recur grid (long (rem spins (- previous-spins spins))) {})
-        (recur (spin-cycle grid) (dec spins) (assoc seen grid spins))))))
+        (recur grids (long (rem spins (- previous-spins spins))) {})
+        (recur remaining-grids (dec spins) (assoc seen grid spins))))))
 
 (core/part 2
   parse-input answer-part-2 *file*

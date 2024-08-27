@@ -10,11 +10,6 @@
 
 (defn parse-input [input] (str/split (str/replace input "\n" "") #","))
 
-(comment
-  (core/current-parsed-input :sample1)
-  (core/current-parsed-input)
-  )
-
 ;;;; Part 1
 
 (defn hash-algorithm [s]

@@ -31,6 +31,10 @@
     (spit (format "src/advent_of_code/year_%d/day_%02d_input.txt" year day)
           "")))
 
+(defn init-today! []
+  (let [date (LocalDate/now (ZoneId/of "America/New_York"))]
+    (init-day! (.getYear date) (.getDayOfMonth date))))
+
 (defn init-tomorrow! []
   (let [date (LocalDate/now (ZoneId/of "America/New_York"))]
     (init-day! (.getYear date) (inc (.getDayOfMonth date)))))
