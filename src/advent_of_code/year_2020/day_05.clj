@@ -2,16 +2,20 @@
   (:require [advent-of-code.core :as core]
             [clojure.string :as string]))
 
-(def input (core/get-input *file*))
+(set! *warn-on-reflection* true)
+
+(core/set-date! 2020 5)
+
+
+;;;; Parse
 
 (defn parse-input [input]
   (string/split-lines input))
 
-(def parsed-input (parse-input input))
+(core/set-parse-fn! parse-input)
 
 
-;;; Part 1
-;;; ============================================================================
+;;;; Part 1
 
 (defn seat-ids [parsed-input]
   (into []
@@ -23,13 +27,11 @@
 (defn answer-part-1 [parsed-input]
   (apply max (seat-ids parsed-input)))
 
-(def part-1-answer (answer-part-1 parsed-input))
+(core/set-answer-fn! 1 answer-part-1
+  [:puzzle 944])
 
-(assert (= part-1-answer 944))
 
-
-;;; Part 2
-;;; ============================================================================
+;;;; Part 2
 
 (defn all-seats [seat-ids]
   (let [seat-ids (sort seat-ids)]
@@ -39,6 +41,5 @@
   (let [seat-ids (vec (sort (seat-ids parsed-input)))]
     (first (reduce disj (all-seats seat-ids) seat-ids))))
 
-(def part-2-answer (answer-part-2 parsed-input))
-
-(assert (= part-2-answer 554))
+(core/set-answer-fn! 2 answer-part-2
+  [:puzzle 554])

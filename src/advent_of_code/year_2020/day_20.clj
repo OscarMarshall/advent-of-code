@@ -3,22 +3,26 @@
             [clojure.set :as set]
             [clojure.string :as string]))
 
-(def input (core/get-input *file*))
+(set! *warn-on-reflection* true)
+
+(core/set-date! 2020 20)
+
+
+;;;; Parse
 
 (defn parse-input [input]
   (into {}
         (map (fn [tile]
                (let [lines (string/split-lines tile)
-                     id    (Long/parseLong (second (re-matches #"Tile (\d+):"
-                                                               (first lines))))]
+                     id    (parse-long (second (re-matches #"Tile (\d+):"
+                                                           (first lines))))]
                  [id {:id id, :image (mapv vec (rest lines))}])))
         (string/split input #"\n\n")))
 
-(def parsed-input (parse-input input))
+(core/set-parse-fn! parse-input)
 
 
-;;; Part 1
-;;; ============================================================================
+;;;; Part 1
 
 (def top (comp first :image))
 (def bottom (comp last :image))
@@ -55,13 +59,11 @@
         directory (make-directory id->sides)]
     (apply * (find-corners id->sides directory))))
 
-(def part-1-answer (answer-part-1 parsed-input))
+(core/set-answer-fn! 1 answer-part-1
+  [:puzzle 79412832860579])
 
-(assert (= part-1-answer 79412832860579))
 
-
-;;; Part 2
-;;; ============================================================================
+;;;; Part 2
 
 (defn rotate-image [tile]
   (update tile :image (fn [image] (apply mapv vector (reverse image)))))
@@ -158,6 +160,5 @@
     (def my-sea-map sea-map)
     (count (filter #{\#} (flatten (:image sea-map))))))
 
-(def part-2-answer (answer-part-2 parsed-input))
-
-(assert (= part-2-answer 2155))
+(core/set-answer-fn! 2 answer-part-2
+  [:puzzle 2155])

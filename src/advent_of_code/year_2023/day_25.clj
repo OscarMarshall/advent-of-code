@@ -4,9 +4,12 @@
             [clojure.string :as string]
             [medley.core :as medley]))
 
-(println "# Day 25")
-
 (set! *warn-on-reflection* true)
+
+(core/set-date! 2023 25)
+
+
+;;;; Parse
 
 (defn parse-input [input]
   (transduce (comp (map #(string/split % #": "))
@@ -21,6 +24,8 @@
                                    sinks)))
              {}
              (string/split-lines input)))
+
+(core/set-parse-fn! parse-input)
 
 ;;;; Part 1
 
@@ -39,7 +44,6 @@
             (* a-size (- graph-size a-size)))
           (recur (disj a (apply medley/greatest-by external-neighbors a))))))))
 
-(core/part 1
-  parse-input answer-part-1 *file*
+(core/set-answer-fn! 1 answer-part-1
   [:sample1 54]
-  [:input 600225])
+  [:puzzle 600225])

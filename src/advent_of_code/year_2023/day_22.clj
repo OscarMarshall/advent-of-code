@@ -2,14 +2,19 @@
   (:require [advent-of-code.core :as core]
             [clojure.string :as str]))
 
-(println "# Day 22")
-
 (set! *warn-on-reflection* true)
+
+(core/set-date! 2023 22)
+
+
+;;;; Parse
 
 (defn parse-input [input]
   (map (fn [brick]
          (mapv #(mapv parse-long (str/split % #",")) (str/split brick #"~")))
        (str/split-lines input)))
+
+(core/set-parse-fn! parse-input)
 
 ;;;; Part 1
 
@@ -50,10 +55,9 @@
                       (= (first (drop-bricks bricks1)) bricks1))
                    (range (count dropped-bricks))))))
 
-(core/part 1
-  parse-input answer-part-1 *file*
+(core/set-answer-fn! 1 answer-part-1
   [:sample1 5]
-  [:input 461])
+  [:puzzle 461])
 
 
 ;;;; Part 2
@@ -70,7 +74,6 @@
                +
                (range (count dropped-bricks)))))
 
-(core/part 2
-  parse-input answer-part-2 *file*
+(core/set-answer-fn! 2 answer-part-2
   [:sample1 7]
-  [:input 74074])
+  [:puzzle 74074])

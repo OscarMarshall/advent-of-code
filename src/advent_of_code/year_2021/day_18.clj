@@ -3,15 +3,19 @@
             [clojure.edn :as edn]
             [clojure.string :as string]))
 
-(def input (core/get-input *file*))
+(set! *warn-on-reflection* true)
+
+(core/set-date! 2021 18)
+
+
+;;;; Parse
 
 (defn parse-input [input] (map edn/read-string (string/split-lines input)))
 
-(def parsed-input (parse-input input))
+(core/set-parse-fn! parse-input)
 
 
-;;; Part 1
-;;; ============================================================================
+;;;; Part 1
 
 (def loc-seq
   (memoize
@@ -73,18 +77,15 @@
 (defn answer-part-1 [parsed-input]
   (magnitude (reduce add-snail-numbers parsed-input)))
 
-(def part-1-answer (answer-part-1 parsed-input))
+(core/set-answer-fn! 1 answer-part-1
+  [:puzzle 3987])
 
-(assert (= part-1-answer 3987))
 
-
-;;; Part 2
-;;; ============================================================================
+;;;; Part 2
 
 (defn answer-part-2 [parsed-input]
   (reduce max (for [x parsed-input, y parsed-input, :when (not= x y)]
                 (magnitude (add-snail-numbers x y)))))
 
-(def part-2-answer (answer-part-2 parsed-input))
-
-(assert (= part-2-answer 4500))
+(core/set-answer-fn! 2 answer-part-2
+  [:puzzle 4500])

@@ -1,9 +1,13 @@
 (ns advent-of-code.year-2022.day-20
   (:require [advent-of-code.core :as core]
-            [clojure.edn :as edn]
             [clojure.string :as string]))
 
-(def input (core/get-input *file*))
+(set! *warn-on-reflection* true)
+
+(core/set-date! 2022 20)
+
+
+;;;; Parse
 
 (defn parse-input [input]
   (let [lines      (string/split-lines input)
@@ -11,16 +15,15 @@
     (into []
           (map-indexed (fn [index s]
                          {:id          index
-                          :value       (edn/read-string s)
+                          :value       (parse-long s)
                           :previous-id (mod (dec index) line-count)
                           :next-id     (mod (inc index) line-count)}))
           lines)))
 
-(def parsed-input (parse-input input))
+(core/set-parse-fn! parse-input)
 
 
-;;; Part 1
-;;; ============================================================================
+;;;; Part 1
 
 (defn remove-node [file {:keys [previous-id next-id]}]
   (-> file
@@ -63,18 +66,15 @@
 
 (defn answer-part-1 [file] (answer file 1))
 
-(def part-1-answer (time (answer-part-1 parsed-input)))
+(core/set-answer-fn! 1 answer-part-1
+  [:puzzle 2827])
 
-(assert (= part-1-answer 2827))
 
-
-;;; Part 2
-;;; ============================================================================
+;;;; Part 2
 
 (defn decrypt [file key] (mapv #(update % :value * key) file))
 
 (defn answer-part-2 [file] (answer (decrypt file 811589153) 10))
 
-(def part-2-answer (time (answer-part-2 parsed-input)))
-
-(assert (= part-2-answer 7834270093909))
+(core/set-answer-fn! 2 answer-part-2
+  [:puzzle 7834270093909])

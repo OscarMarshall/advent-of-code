@@ -2,16 +2,20 @@
   (:require [advent-of-code.core :as core]
             [clojure.string :as string]))
 
-(def input (core/get-input *file*))
+(set! *warn-on-reflection* true)
+
+(core/set-date! 2020 11)
+
+
+;;;; Parse
 
 (defn parse-input [input]
   (mapv vec (string/split-lines input)))
 
-(def parsed-input (parse-input input))
+(core/set-parse-fn! parse-input)
 
 
-;;; Part 1
-;;; ============================================================================
+;;;; Part 1
 
 (defn find-neighbors [layout x y]
   (for [x2    (range (dec x) (+ x 2))
@@ -65,13 +69,11 @@
   (let [seat-graph (make-seat-graph parsed-input find-neighbors)]
     (count (filter :taken (vals (stable-state seat-graph step-seat))))))
 
-(def part-1-answer (answer-part-1 parsed-input))
+(core/set-answer-fn! 1 answer-part-1
+  [:puzzle 2494])
 
-(assert (= part-1-answer 2494))
 
-
-;;; Part 2
-;;; ============================================================================
+;;;; Part 2
 
 (defn find-neighbors2 [layout x y]
   (for [dx    (range -1 2)
@@ -97,6 +99,5 @@
   (let [seat-graph (make-seat-graph parsed-input find-neighbors2)]
     (count (filter :taken (vals (stable-state seat-graph step-seat2))))))
 
-(def part-2-answer (answer-part-2 parsed-input))
-
-(assert (= part-2-answer 2306))
+(core/set-answer-fn! 2 answer-part-2
+  [:puzzle 2306])

@@ -2,17 +2,20 @@
   (:require [advent-of-code.core :as core]
             [clojure.string :as string]))
 
-(def input (core/get-input *file*))
+(set! *warn-on-reflection* true)
+
+(core/set-date! 2021 11)
+
+
+;;;; Parse
 
 (defn parse-input [input]
-  (mapv (partial mapv (comp #(Long/parseLong %) str))
-        (string/split-lines input)))
+  (mapv (partial mapv (comp parse-long str)) (string/split-lines input)))
 
-(def parsed-input (parse-input input))
+(core/set-parse-fn! parse-input)
 
 
-;;; Part 1
-;;; ============================================================================
+;;;; Part 1
 
 (defn all-posns [grid]
   (for [x (range (count grid)), y (range (count (first grid)))] [x y]))
@@ -44,18 +47,15 @@
 (defn answer-part-1 [parsed-input]
   (count (filter zero? (flatten (take 101 (iterate step parsed-input))))))
 
-(def part-1-answer (answer-part-1 parsed-input))
+(core/set-answer-fn! 1 answer-part-1
+  [:puzzle 1585])
 
-(assert (= part-1-answer 1585))
 
-
-;;; Part 2
-;;; ============================================================================
+;;;; Part 2
 
 (defn answer-part-2 [parsed-input]
   (count (take-while (comp (partial not-every? #{0}) flatten)
                      (iterate step parsed-input))))
 
-(def part-2-answer (answer-part-2 parsed-input))
-
-(assert (= part-2-answer 382))
+(core/set-answer-fn! 2 answer-part-2
+  [:puzzle 382])

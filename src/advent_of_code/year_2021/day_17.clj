@@ -1,21 +1,23 @@
 (ns advent-of-code.year-2021.day-17
   (:require [advent-of-code.core :as core]))
 
-(def input (core/get-input *file*))
+(set! *warn-on-reflection* true)
+
+(core/set-date! 2021 17)
+
+
+;;;; Parse
 
 (defn parse-input [input]
-  (let [[x1 x2] (map #(Long/parseLong %)
-                     (rest (re-find #"x=(-?\d+)\.\.(-?\d+)" input)))
-        [y1 y2] (map #(Long/parseLong %)
-                     (rest (re-find #"y=(-?\d+)\.\.(-?\d+)" input)))]
+  (let [[x1 x2] (map parse-long (rest (re-find #"x=(-?\d+)\.\.(-?\d+)" input)))
+        [y1 y2] (map parse-long (rest (re-find #"y=(-?\d+)\.\.(-?\d+)" input)))]
     {:x-range [x1 x2]
      :y-range [y1 y2]}))
 
-(def parsed-input (parse-input input))
+(core/set-parse-fn! parse-input)
 
 
-;;; Part 1
-;;; ============================================================================
+;;;; Part 1
 
 (defn y-posns [velocity]
   (map first (iterate (fn [[y velocity]] [(+ y velocity) (dec velocity)])
@@ -29,13 +31,11 @@
 (defn answer-part-1 [{:keys [y-range]}]
   (highest-y-position (largest-y-velocity (apply min y-range))))
 
-(def part-1-answer (answer-part-1 parsed-input))
+(core/set-answer-fn! 1 answer-part-1
+  [:puzzle 5778])
 
-(assert (= part-1-answer 5778))
 
-
-;;; Part 2
-;;; ============================================================================
+;;;; Part 2
 
 (defn triangle-number [n] (/ (* n (+ n 1)) 2))
 
@@ -79,6 +79,5 @@
                          :when x-velocity]
                      [x-velocity y-velocity]))))
 
-(def part-2-answer (answer-part-2 parsed-input))
-
-(assert (= part-2-answer 2576))
+(core/set-answer-fn! 2 answer-part-2
+  [:puzzle 2576])

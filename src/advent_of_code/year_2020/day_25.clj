@@ -2,15 +2,19 @@
   (:require [advent-of-code.core :as core]
             [clojure.string :as string]))
 
-(def input (core/get-input *file*))
+(set! *warn-on-reflection* true)
 
-(defn parse-input [input] (map #(Long/parseLong %) (string/split-lines input)))
-
-(def parsed-input (parse-input input))
+(core/set-date! 2020 25)
 
 
-;;; Part 1
-;;; ============================================================================
+;;;; Parse
+
+(defn parse-input [input] (map parse-long (string/split-lines input)))
+
+(core/set-parse-fn! parse-input)
+
+
+;;;; Part 1
 
 (defn step [x subject-number] (rem (* x subject-number) 20201227))
 
@@ -23,6 +27,5 @@
                            (iterate #(step % 7) 1)))]
     (nth (iterate #(step % door-public-key) 1) card-loops)))
 
-(def part-1-answer (answer-part-1 parsed-input))
-
-(assert (= part-1-answer 15467093))
+(core/set-answer-fn! 1 answer-part-1
+  [:puzzle 15467093])

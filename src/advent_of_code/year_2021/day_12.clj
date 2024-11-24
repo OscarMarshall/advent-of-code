@@ -2,17 +2,21 @@
   (:require [advent-of-code.core :as core]
             [clojure.string :as string]))
 
-(def input (core/get-input *file*))
+(set! *warn-on-reflection* true)
+
+(core/set-date! 2021 12)
+
+
+;;;; Parse
 
 (defn parse-input [input]
   (map (comp vec rest (partial re-matches #"(.*)-(.*)"))
        (string/split-lines input)))
 
-(def parsed-input (parse-input input))
+(core/set-parse-fn! parse-input)
 
 
-;;; Part 1
-;;; ============================================================================
+;;;; Part 1
 
 (defn paths-to-end [parsed-input small-cave-revisits]
   (let [connections (into {}
@@ -46,17 +50,14 @@
 (defn answer-part-1 [parsed-input]
   (count (paths-to-end parsed-input 0)))
 
-(def part-1-answer (answer-part-1 parsed-input))
+(core/set-answer-fn! 1 answer-part-1
+  [:puzzle 4912])
 
-(assert (= part-1-answer 4912))
 
-
-;;; Part 2
-;;; ============================================================================
+;;;; Part 2
 
 (defn answer-part-2 [parsed-input]
   (count (paths-to-end parsed-input 1)))
 
-(def part-2-answer (answer-part-2 parsed-input))
-
-(assert (= part-2-answer 150004))
+(core/set-answer-fn! 2 answer-part-2
+  [:puzzle 150004])

@@ -1,14 +1,19 @@
 (ns advent-of-code.year-2021.day-13
   (:require [advent-of-code.core :as core]
-            [clojure.string :as string]
-            [clojure.set :as set]))
+            [clojure.set :as set]
+            [clojure.string :as string]))
 
-(def input (core/get-input *file*))
+(set! *warn-on-reflection* true)
+
+(core/set-date! 2021 13)
+
+
+;;;; Parse
 
 (defn parse-input [input]
   (let [[dots _ instructions] (partition-by #{""} (string/split-lines input))]
     {:dots         (into #{}
-                         (map (comp (partial mapv #(Long/parseLong %))
+                         (map (comp (partial mapv parse-long)
                                     rest
                                     (partial re-matches #"(\d+),(\d+)")))
                          dots)
@@ -16,14 +21,13 @@
                           (let [[_ axis position]
                                 (re-matches #"fold along ([xy])=(\d+)" line)]
                             {:axis     (keyword axis)
-                             :position (Long/parseLong position)}))
+                             :position (parse-long position)}))
                         instructions)}))
 
-(def parsed-input (parse-input input))
+(core/set-parse-fn! parse-input)
 
 
-;;; Part 1
-;;; ============================================================================
+;;;; Part 1
 
 (defn fold [dots {:keys [axis position]}]
   (let [axis         ({:x 0, :y 1} axis)
@@ -40,13 +44,11 @@
 (defn answer-part-1 [{:keys [dots instructions]}]
   (count (fold dots (first instructions))))
 
-(def part-1-answer (answer-part-1 parsed-input))
+(core/set-answer-fn! 1 answer-part-1
+  [:puzzle 775])
 
-(assert (= part-1-answer 775))
 
-
-;;; Part 2
-;;; ============================================================================
+;;;; Part 2
 
 (defn dots-str [dots]
   (let [width  (apply max (map #(nth % 0) dots))
@@ -60,12 +62,10 @@
 (defn answer-part-2 [{:keys [dots instructions]}]
   (dots-str (reduce fold dots instructions)))
 
-(def part-2-answer (answer-part-2 parsed-input))
-
-(assert (= part-2-answer
-           (str "███  ████ █  █ ███  █  █ ███  █  █ ███ \n"
+(core/set-answer-fn! 2 answer-part-2
+  [:puzzle (str "███  ████ █  █ ███  █  █ ███  █  █ ███ \n"
                 "█  █ █    █  █ █  █ █  █ █  █ █ █  █  █\n"
                 "█  █ ███  █  █ █  █ █  █ █  █ ██   █  █\n"
                 "███  █    █  █ ███  █  █ ███  █ █  ███ \n"
                 "█ █  █    █  █ █    █  █ █    █ █  █ █ \n"
-                "█  █ ████  ██  █     ██  █    █  █ █  █\n")))
+                "█  █ ████  ██  █     ██  █    █  █ █  █\n")])

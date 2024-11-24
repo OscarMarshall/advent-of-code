@@ -4,9 +4,12 @@
             [clojure.string :as str]
             [medley.core :as medley]))
 
-(println "# Day 4")
-
 (set! *warn-on-reflection* true)
+
+(core/set-date! 2023 4)
+
+
+;;;; Parse
 
 (defn parse-numbers [s] (map parse-long (re-seq #"\d+" s)))
 
@@ -21,6 +24,8 @@
 (defn parse-input [input]
   (medley/index-by :id (map parse-card (str/split-lines input))))
 
+(core/set-parse-fn! parse-input)
+
 
 ;;;; Part 1
 
@@ -34,15 +39,14 @@
 (defn answer-part-1 [cards]
   (apply + (map score-card (vals cards))))
 
-(core/part 1
-  parse-input answer-part-1 *file*
+(core/set-answer-fn! 1 answer-part-1
   [:sample1 13]
-  [:input 15268])
+  [:puzzle 15268])
 
 
 ;;;; Part 2
 
-(defn initial-card-counts [cards] (medley/map-vals #(assoc % :count 1) cards))
+(defn initial-card-counts [cards] (update-vals cards #(assoc % :count 1)))
 
 (defn add-copies [cards ids amount]
   (reduce #(update-in %1 [%2 :count] + amount) cards ids))
@@ -60,7 +64,6 @@
 (defn answer-part-2 [cards]
   (transduce (map :count) + (vals (process-cards cards))))
 
-(core/part 2
-  parse-input answer-part-2 *file*
+(core/set-answer-fn! 2 answer-part-2
   [:sample1 30]
-  [:input 6283755])
+  [:puzzle 6283755])

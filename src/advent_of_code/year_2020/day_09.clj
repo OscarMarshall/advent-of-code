@@ -2,16 +2,19 @@
   (:require [advent-of-code.core :as core]
             [clojure.string :as string]))
 
-(def input (core/get-input *file*))
+(set! *warn-on-reflection* true)
 
-(defn parse-input [input]
-  (map #(Long/parseLong %) (string/split-lines input)))
-
-(def parsed-input (parse-input input))
+(core/set-date! 2020 9)
 
 
-;;; Part 1
-;;; ============================================================================
+;;;; Parse
+
+(defn parse-input [input] (map parse-long (string/split-lines input)))
+
+(core/set-parse-fn! parse-input)
+
+
+;;;; Part 1
 
 (defn answer-part-1 [parsed-input]
   (let [[preamble message] (split-at 25 parsed-input)]
@@ -28,25 +31,24 @@
                      (update n (fnil inc 0)))))
         n))))
 
-(def part-1-answer (answer-part-1 parsed-input))
+(core/set-answer-fn! 1 answer-part-1
+  [:puzzle 41682220])
 
-(assert (= part-1-answer 41682220))
 
-
-;;; Part 2
-;;; ============================================================================
+;;;; Part 2
 
 (defn answer-part-2 [parsed-input]
-  (reduce (fn [[window sum] x]
-            (loop [window (conj window x), sum (+ sum x)]
-              (cond
-                (> sum part-1-answer) (recur (pop window) (- sum (peek window)))
-                (= sum part-1-answer) (reduced (+ (apply min window)
-                                                  (apply max window)))
-                :else                 [window sum])))
-          [clojure.lang.PersistentQueue/EMPTY 0]
-          parsed-input))
+  (let [part-1-answer (answer-part-1 parsed-input)]
+    (reduce (fn [[window sum] x]
+              (loop [window (conj window x), sum (+ sum x)]
+                (cond
+                  (> sum part-1-answer) (recur (pop window)
+                                               (- sum (peek window)))
+                  (= sum part-1-answer) (reduced (+ (apply min window)
+                                                    (apply max window)))
+                  :else                 [window sum])))
+            [clojure.lang.PersistentQueue/EMPTY 0]
+            parsed-input)))
 
-(def part-2-answer (answer-part-2 parsed-input))
-
-(assert (= part-2-answer 5388976))
+(core/set-answer-fn! 2 answer-part-2
+  [:puzzle 5388976])

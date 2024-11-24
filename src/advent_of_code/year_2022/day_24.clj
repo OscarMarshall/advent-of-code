@@ -1,9 +1,13 @@
 (ns advent-of-code.year-2022.day-24
   (:require [advent-of-code.core :as core]
-            [clojure.string :as string]
-            [medley.core :as medley]))
+            [clojure.string :as string]))
 
-(def input (core/get-input *file*))
+(set! *warn-on-reflection* true)
+
+(core/set-date! 2022 24)
+
+
+;;;; Parse
 
 (def character->blizzard-direction {\> :right, \v :down, \< :left, \^ :up})
 
@@ -21,11 +25,10 @@
                       :when  (not= character \.)]
                   [position (character->blizzard-direction character)])}))
 
-(def parsed-input (parse-input input))
+(core/set-parse-fn! parse-input)
 
 
-;;; Part 1
-;;; ============================================================================
+;;;; Part 1
 
 (def direction->delta {:right [0 1], :down [1 0], :left [0 -1], :up [-1 0]})
 (def possible-deltas (cons [0 0] (vals direction->delta)))
@@ -69,13 +72,11 @@
         valley-maps     (valley-maps blizzard-cycles)]
     (minutes-to height width valley-maps [-1 0] [height (dec width)])))
 
-(def part-1-answer (answer-part-1 parsed-input))
+(core/set-answer-fn! 1 answer-part-1
+  [:puzzle 249])
 
-(assert (= part-1-answer 249))
 
-
-;;; Part 2
-;;; ============================================================================
+;;;; Part 2
 
 (defn answer-part-2 [{:keys [height width blizzards]}]
   (let [start           [-1 0]
@@ -89,6 +90,5 @@
                    [0 valley-maps]
                    [[start end] [end start] [start end]]))))
 
-(def part-2-answer (answer-part-2 parsed-input))
-
-(assert (= part-2-answer 735))
+(core/set-answer-fn! 2 answer-part-2
+  [:puzzle 735])

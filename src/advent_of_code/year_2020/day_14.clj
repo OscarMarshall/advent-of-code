@@ -2,23 +2,27 @@
   (:require [advent-of-code.core :as core]
             [clojure.string :as string]))
 
-(def input (core/get-input *file*))
+(set! *warn-on-reflection* true)
+
+(core/set-date! 2020 14)
+
+
+;;;; Parse
 
 (defn parse-input [input]
   (map (fn [line]
          (if-let [[_ address value] (re-matches #"mem\[(\d+)\] = (\d+)" line)]
            {:op      :set-mem
-            :address (Long/parseLong address)
-            :value   (Long/parseLong value)}
+            :address (parse-long address)
+            :value   (parse-long value)}
            (let [[_ mask] (re-matches #"mask = (.*)" line)]
              {:op :set-mask, :value mask})))
        (string/split-lines input)))
 
-(def parsed-input (parse-input input))
+(core/set-parse-fn! parse-input)
 
 
-;;; Part 1
-;;; ============================================================================
+;;;; Part 1
 
 (defn apply-mask [number mask]
   (let [base-2 (Long/toString number 2)]
@@ -43,13 +47,11 @@
    vals
    (apply +)))
 
-(def part-1-answer (answer-part-1 parsed-input))
+(core/set-answer-fn! 1 answer-part-1
+  [:puzzle 15403588588538])
 
-(assert (= part-1-answer 15403588588538))
 
-
-;;; Part 2
-;;; ============================================================================
+;;;; Part 2
 
 (defn apply-mask2 [number mask]
   (let [base-2 (Long/toString number 2)]
@@ -81,6 +83,5 @@
    vals
    (apply +)))
 
-(def part-2-answer (answer-part-2 parsed-input))
-
-(assert (= part-2-answer 3260587250457))
+(core/set-answer-fn! 2 answer-part-2
+  [:puzzle 3260587250457])

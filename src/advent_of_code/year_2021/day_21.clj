@@ -1,17 +1,21 @@
 (ns advent-of-code.year-2021.day-21
   (:require [advent-of-code.core :as core]))
 
-(def input (core/get-input *file*))
+(set! *warn-on-reflection* true)
+
+(core/set-date! 2021 21)
+
+
+;;;; Parse
 
 (defn parse-input [input]
-  (mapv (comp #(Long/parseLong %) second)
+  (mapv (comp parse-long second)
         (re-seq #"Player [12] starting position: (\d+)" input)))
 
-(def parsed-input (parse-input input))
+(core/set-parse-fn! parse-input)
 
 
-;;; Part 1
-;;; ============================================================================
+;;;; Part 1
 
 (defn play-turn [[turn posns scores] die-rolls]
   (let [player (mod turn 2)
@@ -39,13 +43,11 @@
                              first)]
     (* (apply min scores) 3 turn)))
 
-(def part-1-answer (answer-part-1 parsed-input))
+(core/set-answer-fn! 1 answer-part-1
+  [:puzzle 1002474])
 
-(assert (= part-1-answer 1002474))
 
-
-;;; Part 2
-;;; ============================================================================
+;;;; Part 2
 
 (def dirac-wins
   (memoize
@@ -72,6 +74,5 @@
 (defn answer-part-2 [parsed-input]
   (apply max (dirac-wins [0 parsed-input [0 0]] (winner-fn 21))))
 
-(def part-2-answer (answer-part-2 parsed-input))
-
-(assert (= part-2-answer 919758187195363))
+(core/set-answer-fn! 2 answer-part-2
+  [:puzzle 919758187195363])

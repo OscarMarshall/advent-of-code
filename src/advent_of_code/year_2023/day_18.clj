@@ -1,9 +1,12 @@
 (ns advent-of-code.year-2023.day-18
   (:require [advent-of-code.core :as core]))
 
-(println "# Day 18")
-
 (set! *warn-on-reflection* true)
+
+(core/set-date! 2023 18)
+
+
+;;;; Parse
 
 (def string->direction
   {"U" :up
@@ -15,6 +18,8 @@
   (map (fn [[_ direction-string distance color]]
          [(string->direction direction-string) (parse-long distance) color])
        (re-seq #"([UDLR]) (\d+) \((.*)\)" input)))
+
+(core/set-parse-fn! parse-input)
 
 ;;;; Part 1
 
@@ -65,10 +70,9 @@
 (defn answer-part-1 [plans]
   (dug-out-size (dig plans)))
 
-(core/part 1
-  parse-input answer-part-1 *file*
+(core/set-answer-fn! 1 answer-part-1
   [:sample1 62]
-  [:input [not= 7494] 36725])
+  [:puzzle [not= 7494] 36725])
 
 
 ;;;; Part 2
@@ -85,7 +89,6 @@
                          (Long/parseLong (subs color 1 6) 16)])
                       plans)))
 
-(core/part 2
-  parse-input answer-part-2 *file*
+(core/set-answer-fn! 2 answer-part-2
   [:sample1 952408144115]
-  [:input 97874103749720])
+  [:puzzle 97874103749720])

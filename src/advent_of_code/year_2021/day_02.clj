@@ -2,19 +2,23 @@
   (:require [advent-of-code.core :as core]
             [clojure.string :as string]))
 
-(def input (core/get-input *file*))
+(set! *warn-on-reflection* true)
+
+(core/set-date! 2021 2)
+
+
+;;;; Parse
 
 (defn parse-input [input]
   (map (fn [s]
          (let [[direction amount] (string/split s #" ")]
-           [(keyword direction) (Long/parseLong amount)]))
+           [(keyword direction) (parse-long amount)]))
        (string/split-lines input)))
 
-(def parsed-input (parse-input input))
+(core/set-parse-fn! parse-input)
 
 
-;;; Part 1
-;;; ============================================================================
+;;;; Part 1
 
 (defn move [position [direction amount]]
   (case direction
@@ -28,13 +32,11 @@
                                            parsed-input)]
     (* horizontal depth)))
 
-(def part-1-answer (answer-part-1 parsed-input))
+(core/set-answer-fn! 1 answer-part-1
+  [:puzzle 2027977])
 
-(assert (= part-1-answer 2027977))
 
-
-;;; Part 2
-;;; ============================================================================
+;;;; Part 2
 
 (defn move2 [{:as position, :keys [aim]} [direction amount]]
   (case direction
@@ -50,6 +52,5 @@
                                            parsed-input)]
     (* horizontal depth)))
 
-(def part-2-answer (answer-part-2 parsed-input))
-
-(assert (= part-2-answer 1903644897))
+(core/set-answer-fn! 2 answer-part-2
+  [:puzzle 1903644897])

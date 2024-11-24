@@ -3,9 +3,12 @@
             [clojure.string :as str]
             [medley.core :as medley]))
 
-(println "# Day 20")
-
 (set! *warn-on-reflection* true)
+
+(core/set-date! 2023 20)
+
+
+;;;; Parse
 
 (defn parse-module [s]
   (let [[_ type name destinations] (re-matches #"([%&]?)([a-z]+) -> (.*)" s)]
@@ -15,6 +18,8 @@
 
 (defn parse-input [input]
   (medley/index-by :name (map parse-module (str/split-lines input))))
+
+(core/set-parse-fn! parse-input)
 
 ;;;; Part 1
 
@@ -64,7 +69,7 @@
 
 (defn initialize-modules [modules]
   (let [sources (gather-sources modules)]
-    (medley/map-vals #(initialize-module % sources) modules)))
+    (update-vals modules #(initialize-module % sources))))
 
 (defn propagate-pulses [modules pulses]
   (loop [modules modules, pulses pulses, i 0]
@@ -91,11 +96,10 @@
              [0 0]
              (rest (button-presses modules))))
 
-(core/part 1
-  parse-input answer-part-1 *file*
+(core/set-answer-fn! 1 answer-part-1
   [:sample1 32000000]
   [:sample2 11687500]
-  [:input 703315117])
+  [:puzzle 703315117])
 
 
 ;;;; Part 2
@@ -120,6 +124,5 @@
                *
                (sources (first (sources :rx))))))
 
-(core/part 2
-  parse-input answer-part-2 *file*
-  [:input 230402300925361])
+(core/set-answer-fn! 2 answer-part-2
+  [:puzzle 230402300925361])

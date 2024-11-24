@@ -2,12 +2,17 @@
   (:require [advent-of-code.core :as core]
             [clojure.string :as string]))
 
-(def input (core/get-input *file*))
+(set! *warn-on-reflection* true)
+
+(core/set-date! 2020 18)
+
+
+;;;; Parse
 
 (defn parse-input [input]
   (map (fn [line]
          (map (fn [[token number]]
-                (or (some-> number Long/parseLong)
+                (or (some-> number parse-long)
                     (case token
                       "+" +
                       "*" *
@@ -16,11 +21,10 @@
               (re-seq #"(\d+)|\+|\*|\(|\)" line)))
        (string/split-lines input)))
 
-(def parsed-input (parse-input input))
+(core/set-parse-fn! parse-input)
 
 
-;;; Part 1
-;;; ============================================================================
+;;;; Part 1
 
 (defn apply-parens [tokens]
   (loop [[token & tokens] tokens, result []]
@@ -42,13 +46,11 @@
 (defn answer-part-1 [parsed-input]
   (apply + (map (comp eval-expr apply-parens) parsed-input)))
 
-(def part-1-answer (answer-part-1 parsed-input))
+(core/set-answer-fn! 1 answer-part-1
+  [:puzzle 45283905029161])
 
-(assert (= part-1-answer 45283905029161))
 
-
-;;; Part 2
-;;; ============================================================================
+;;;; Part 2
 
 (defn apply-precedence [expr]
   (if (seq? expr)
@@ -63,6 +65,5 @@
 (defn answer-part-2 [parsed-input]
   (apply + (map (comp eval-expr apply-precedence apply-parens) parsed-input)))
 
-(def part-2-answer (answer-part-2 parsed-input))
-
-(assert (= part-2-answer 216975281211165))
+(core/set-answer-fn! 2 answer-part-2
+  [:puzzle 216975281211165])

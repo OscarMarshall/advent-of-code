@@ -2,16 +2,19 @@
   (:require [advent-of-code.core :as core]
             [clojure.string :as string]))
 
-(def input (core/get-input *file*))
+(set! *warn-on-reflection* true)
 
-(defn parse-input [input]
-  (map #(Long/parseLong %) (string/split-lines input)))
-
-(def parsed-input (parse-input input))
+(core/set-date! 2020 1)
 
 
-;;; Part 1
-;;; ============================================================================
+;;;; Parse
+
+(defn parse-input [input] (map parse-long (string/split-lines input)))
+
+(core/set-parse-fn! parse-input)
+
+
+;;;; Part 1
 
 (def target 2020)
 
@@ -28,19 +31,16 @@
 (defn answer-part-1 [parsed-input]
   (apply * (find-2-expenses target parsed-input)))
 
-(def part-1-answer (answer-part-1 parsed-input))
+(core/set-answer-fn! 1 answer-part-1
+  [:puzzle 299299])
 
-(assert (= part-1-answer 299299))
 
-
-;;; Part 2
-;;; ============================================================================
+;;;; Part 2
 
 (defn answer-part-2 [parsed-input]
   (some (fn [[a & more]]
           (some->> more (find-2-expenses (- target a)) (apply * a)))
         (iterate next parsed-input)))
 
-(def part-2-answer (answer-part-2 parsed-input))
-
-(assert (= part-2-answer 287730716))
+(core/set-answer-fn! 2 answer-part-2
+  [:puzzle 287730716])

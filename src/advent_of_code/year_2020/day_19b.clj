@@ -2,22 +2,25 @@
   (:require [advent-of-code.core :as core]
             [clojure.string :as string]))
 
-(def input (core/get-input *file*))
+(set! *warn-on-reflection* true)
+
+(core/set-date! 2020 19)
+
+
+;;;; Parse
 
 (defn parse-input [input]
   (let [[rules messages] (map string/split-lines (string/split input #"\n\n"))]
     {:rules    (into {}
-                     (map (comp (juxt (comp #(Long/parseLong %) first)
-                                      second)
+                     (map (comp (juxt (comp parse-long first) second)
                                 #(string/split % #": ")))
                      rules)
      :messages messages}))
 
-(def parsed-input (parse-input input))
+(core/set-parse-fn! parse-input)
 
 
-;;; Part 1
-;;; ============================================================================
+;;;; Part 1
 
 (defn rule->regex [rule rules]
   (if (int? rule)
@@ -28,7 +31,7 @@
                            (format "(?:%s|%s)"
                                    (rule->regex left rules)
                                    (rule->regex right rules)))
-      (let [sub-rules (map #(Long/parseLong %) (re-seq #"\d+" rule))]
+      (let [sub-rules (map parse-long (re-seq #"\d+" rule))]
         (string/join (map #(rule->regex % rules) sub-rules))))))
 
 (defn answer-part-1 [parsed-input]
@@ -36,13 +39,11 @@
     (count (filter (partial re-matches (re-pattern (rule->regex 0 rules)))
                    messages))))
 
-(def part-1-answer (answer-part-1 parsed-input))
+(core/set-answer-fn! 1 answer-part-1
+  [:puzzle 147])
 
-(assert (= part-1-answer 147))
 
-
-;;; Part 2
-;;; ============================================================================
+;;;; Part 2
 
 (defn answer-part-2 [parsed-input]
   (let [{:keys [rules messages]} parsed-input
@@ -63,6 +64,5 @@
                            (> (count re42s) (count re31s))))))
                    messages))))
 
-(def part-2-answer (answer-part-2 parsed-input))
-
-(assert (= part-2-answer 263))
+(core/set-answer-fn! 2 answer-part-2
+  [:puzzle 263])

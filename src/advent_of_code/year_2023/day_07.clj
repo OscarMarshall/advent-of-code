@@ -2,13 +2,18 @@
   (:require [advent-of-code.core :as core]
             [clojure.string :as str]))
 
-(println "# Day 7")
-
 (set! *warn-on-reflection* true)
+
+(core/set-date! 2023 7)
+
+
+;;;; Parse
 
 (defn parse-input [input]
   (map #(update (zipmap [:hand :bid] (str/split % #" ")) :bid parse-long)
        (str/split-lines input)))
+
+(core/set-parse-fn! parse-input)
 
 
 ;;;; Part 1
@@ -49,10 +54,9 @@
   (score-hands-and-bids (sort-by (fn [{:keys [hand]}] (hand-strength hand))
                                  hands-and-bids)))
 
-(core/part 1
-  parse-input answer-part-1 *file*
+(core/set-answer-fn! 1 answer-part-1
   [:sample1 6440]
-  [:input [> 253046761] 253205868])
+  [:puzzle [> 253046761] 253205868])
 
 
 ;;;; Part 2
@@ -75,7 +79,6 @@
   (score-hands-and-bids (sort-by (fn [{:keys [hand]}] (hand-strength2 hand))
                                  hands-and-bids)))
 
-(core/part 2
-  parse-input answer-part-2 *file*
+(core/set-answer-fn! 2 answer-part-2
   [:sample1 5905]
-  [:input 253907829])
+  [:puzzle 253907829])

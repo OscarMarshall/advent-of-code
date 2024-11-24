@@ -2,12 +2,17 @@
   (:require [advent-of-code.core :as core]
             [clojure.string :as str]))
 
-(println "# Day 9")
-
 (set! *warn-on-reflection* true)
+
+(core/set-date! 2023 9)
+
+
+;;;; Parse
 
 (defn parse-input [input]
   (map #(mapv parse-long (str/split % #" ")) (str/split-lines input)))
+
+(core/set-parse-fn! parse-input)
 
 ;;;; Part 1
 
@@ -19,10 +24,9 @@
 (defn answer-part-1 [xs]
   (transduce (map extrapolate) + xs))
 
-(core/part 1
-  parse-input answer-part-1 *file*
+(core/set-answer-fn! 1 answer-part-1
   [:sample1 114]
-  [:input 1898776583])
+  [:puzzle 1898776583])
 
 
 ;;;; Part 2
@@ -30,7 +34,6 @@
 (defn answer-part-2 [xs]
   (answer-part-1 (map #(vec (reverse %)) xs)))
 
-(core/part 2
-  parse-input answer-part-2 *file*
+(core/set-answer-fn! 2 answer-part-2
   [:sample1 2]
-  [:input 1100])
+  [:puzzle 1100])

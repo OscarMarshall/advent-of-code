@@ -2,14 +2,19 @@
   (:require [advent-of-code.core :as core]
             [clojure.string :as str]))
 
-(println "# Day 12")
-
 (set! *warn-on-reflection* true)
+
+(core/set-date! 2023 12)
+
+
+;;;; Parse
 
 (defn parse-input [input]
   (map (fn [s] (let [[springs damaged-groups] (str/split s #" " 2)]
                  [springs (map parse-long (str/split damaged-groups #","))]))
        (str/split-lines input)))
+
+(core/set-parse-fn! parse-input)
 
 ;;;; Part 1
 
@@ -38,10 +43,9 @@
              +
              condition-records))
 
-(core/part 1
-  parse-input answer-part-1 *file*
+(core/set-answer-fn! 1 answer-part-1
   [:sample1 21]
-  [:input 7195])
+  [:puzzle 7195])
 
 
 ;;;; Part 2
@@ -52,7 +56,6 @@
 (defn answer-part-2 [condition-records]
   (answer-part-1 (map unfold-condition-record condition-records)))
 
-(core/part 2
-  parse-input answer-part-2 *file*
+(core/set-answer-fn! 2 answer-part-2
   [:sample1 525152]
-  [:input 33992866292225])
+  [:puzzle 33992866292225])

@@ -4,19 +4,21 @@
 
 (set! *warn-on-reflection* true)
 
-(def input (core/get-input *file*))
+(core/set-date! 2022 1)
+
+
+;;;; Parse
 
 (defn parse-input [input]
   (sequence (comp (partition-by empty?)
                   (remove #{[""]})
-                  (map (partial map #(Integer/parseInt %))))
+                  (map (partial map parse-long)))
             (string/split-lines input)))
 
-(def parsed-input (parse-input input))
+(core/set-parse-fn! parse-input)
 
 
-;;; Part 1
-;;; ============================================================================
+;;;; Part 1
 
 (defn sorted-calorie-totals [list-of-calories]
   (sort (comp - compare) (map (partial apply +) list-of-calories)))
@@ -24,17 +26,14 @@
 (defn answer-part-1 [parsed-input]
   (first (sorted-calorie-totals parsed-input)))
 
-(def part-1-answer (answer-part-1 parsed-input))
+(core/set-answer-fn! 1 answer-part-1
+  [:puzzle 68775])
 
-(assert (= part-1-answer 68775))
 
-
-;;; Part 2
-;;; ============================================================================
+;;;; Part 2
 
 (defn answer-part-2 [parsed-input]
   (apply + (take 3 (sorted-calorie-totals parsed-input))))
 
-(def part-2-answer (answer-part-2 parsed-input))
-
-(assert (= part-2-answer 202585))
+(core/set-answer-fn! 2 answer-part-2
+  [:puzzle 202585])

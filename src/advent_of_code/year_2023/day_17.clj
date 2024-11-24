@@ -2,12 +2,17 @@
   (:require [advent-of-code.core :as core]
             [clojure.string :as str]))
 
-(println "# Day 17")
-
 (set! *warn-on-reflection* true)
+
+(core/set-date! 2023 17)
+
+
+;;;; Parse
 
 (defn parse-input [input]
   (mapv (fn [row] (mapv #(parse-long (str %)) row)) (str/split-lines input)))
+
+(core/set-parse-fn! parse-input)
 
 ;;;; Part 1
 
@@ -71,18 +76,16 @@
 
 (defn answer-part-1 [grid] (lowest-heat-loss grid 1 3))
 
-(core/part 1
-  parse-input answer-part-1 *file*
+(core/set-answer-fn! 1 answer-part-1
   [:sample1 102]
-  [:input 668])
+  [:puzzle 668])
 
 
 ;;;; Part 2
 
 (defn answer-part-2 [grid] (lowest-heat-loss grid 4 10))
 
-(core/part 2
-  parse-input answer-part-2 *file*
+(core/set-answer-fn! 2 answer-part-2
   [:sample1 94]
   [:sample2 71]
-  [:input 788])
+  [:puzzle 788])

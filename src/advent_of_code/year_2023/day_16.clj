@@ -2,11 +2,16 @@
   (:require [advent-of-code.core :as core]
             [clojure.string :as str]))
 
-(println "# Day 16")
-
 (set! *warn-on-reflection* true)
 
+(core/set-date! 2023 16)
+
+
+;;;; Parse
+
 (defn parse-input [input] (mapv vec (str/split-lines input)))
+
+(core/set-parse-fn! parse-input)
 
 ;;;; Part 1
 
@@ -60,10 +65,9 @@
 
 (defn answer-part-1 [layout] (energized-tiles layout [[0 0] :right]))
 
-(core/part 1
-  parse-input answer-part-1 *file*
+(core/set-answer-fn! 1 answer-part-1
   [:sample1 46]
-  [:input 7046])
+  [:puzzle 7046])
 
 
 ;;;; Part 2
@@ -82,7 +86,6 @@
                               [[[0 column] :down] [[(dec height) column] :up]])
                             (range width))))))
 
-(core/part 2
-  parse-input answer-part-2 *file*
+(core/set-answer-fn! 2 answer-part-2
   [:sample1 51]
-  [:input 7313])
+  [:puzzle 7313])

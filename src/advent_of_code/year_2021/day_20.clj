@@ -2,18 +2,22 @@
   (:require [advent-of-code.core :as core]
             [clojure.string :as string]))
 
-(def input (core/get-input *file*))
+(set! *warn-on-reflection* true)
+
+(core/set-date! 2021 20)
+
+
+;;;; Parse
 
 (defn parse-input [input]
   (let [[[algorithm] _ image] (partition-by #{""} (string/split-lines input))]
     {:algorithm algorithm
      :image     (vec image)}))
 
-(def parsed-input (parse-input input))
+(core/set-parse-fn! parse-input)
 
 
-;;; Part 1
-;;; ============================================================================
+;;;; Part 1
 
 (def flip-pixel {\. \#, \# \.})
 
@@ -64,13 +68,11 @@
 
                        2))))
 
-(def part-1-answer (answer-part-1 parsed-input))
+(core/set-answer-fn! 1 answer-part-1
+  [:puzzle 5573])
 
-(assert (= part-1-answer part-1-answer))
 
-
-;;; Part 2
-;;; ============================================================================
+;;;; Part 2
 
 (defn answer-part-2 [{:keys [algorithm image]}]
   (count (:points (nth (iterate #(step-image % algorithm)
@@ -78,6 +80,5 @@
 
                        50))))
 
-(def part-2-answer (answer-part-2 parsed-input))
-
-(assert (= part-2-answer 20097))
+(core/set-answer-fn! 2 answer-part-2
+  [:puzzle 20097])

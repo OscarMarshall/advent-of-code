@@ -2,7 +2,12 @@
   (:require [advent-of-code.core :as core]
             [clojure.string :as string]))
 
-(def input (core/get-input *file*))
+(set! *warn-on-reflection* true)
+
+(core/set-date! 2021 23)
+
+
+;;;; Parse
 
 (def rooms [:room-a :room-b :room-c :room-d])
 (def hallways
@@ -14,11 +19,10 @@
     (zipmap rooms
             (map (fn [i] (take-nth 4 (drop i amphipods))) (range 4)))))
 
-(def parsed-input (parse-input input))
+(core/set-parse-fn! parse-input)
 
 
-;;; Part 1
-;;; ============================================================================
+;;;; Part 1
 
 (def location-graph
   {:hallway0 {:hallway1 1}
@@ -144,13 +148,11 @@
 (defn answer-part-1 [parsed-input]
   (min-steps (parsed-input->locations parsed-input)))
 
-(def part-1-answer (answer-part-1 parsed-input))
+(core/set-answer-fn! 1 answer-part-1
+  [:puzzle 18282])
 
-(assert (= part-1-answer 18282))
 
-
-;;; Part 2
-;;; ============================================================================
+;;;; Part 2
 
 (def new-input
   {:room-a '(\D \D)
@@ -164,6 +166,5 @@
        parsed-input->locations
        min-steps))
 
-(def part-2-answer (answer-part-2 parsed-input))
-
-(assert (= part-2-answer 50132))
+(core/set-answer-fn! 2 answer-part-2
+  [:puzzle 50132])

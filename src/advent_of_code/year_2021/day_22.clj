@@ -2,7 +2,12 @@
   (:require [advent-of-code.core :as core]
             [clojure.string :as string]))
 
-(def input (core/get-input *file*))
+(set! *warn-on-reflection* true)
+
+(core/set-date! 2021 22)
+
+
+;;;; Parse
 
 (def pattern #"(on|off) x=(.+)\.\.(.+),y=([\-0-9]+)\.\.(.+),z=(.+)\.\.(.+)")
 
@@ -10,16 +15,15 @@
   (map (fn [s]
          (let [[_ state & coords] (re-matches pattern s)]
            [(keyword state) (->> coords
-                                 (map #(Long/parseLong %))
+                                 (map parse-long)
                                  (partition 2)
                                  (mapv vec))]))
        (string/split-lines input)))
 
-(def parsed-input (parse-input input))
+(core/set-parse-fn! parse-input)
 
 
-;;; Part 1
-;;; ============================================================================
+;;;; Part 1
 
 (def volumes-intersect?
   (comp (partial every? (fn [[[a-start a-end] [b-start b-end]]]
@@ -72,17 +76,14 @@
        (filter (comp (partial every? #(<= -50 % 50)) flatten rest))
        on-cubes-count))
 
-(def part-1-answer (answer-part-1 parsed-input))
+(core/set-answer-fn! 1 answer-part-1
+  [:puzzle 610196])
 
-(assert (= part-1-answer 610196))
 
-
-;;; Part 2
-;;; ============================================================================
+;;;; Part 2
 
 (defn answer-part-2 [parsed-input]
   (on-cubes-count parsed-input))
 
-(def part-2-answer (answer-part-2 parsed-input))
-
-(assert (= part-2-answer 1282401587270826))
+(core/set-answer-fn! 2 answer-part-2
+  [:puzzle 1282401587270826])

@@ -3,9 +3,12 @@
             [clojure.string :as str]
             [medley.core :as medley]))
 
-(println "# Day 8")
-
 (set! *warn-on-reflection* true)
+
+(core/set-date! 2023 8)
+
+
+;;;; Parse
 
 (defn parse-nodes [nodes]
   (->> nodes
@@ -19,6 +22,8 @@
     {:instructions (map {\L :left, \R :right} instructions)
      :nodes (parse-nodes nodes)}))
 
+(core/set-parse-fn! parse-input)
+
 
 ;;;; Part 1
 
@@ -31,11 +36,10 @@
 
 (defn answer-part-1 [network] (answer network "AAA" #{"ZZZ"}))
 
-(core/part 1
-  parse-input answer-part-1 *file*
+(core/set-answer-fn! 1 answer-part-1
   [:sample1 2]
   [:sample2 6]
-  [:input 21409])
+  [:puzzle 21409])
 
 
 ;;;; Part 2
@@ -62,7 +66,6 @@
                1
                (starting-ids (keys nodes)))))
 
-(core/part 2
-  parse-input answer-part-2 *file*
+(core/set-answer-fn! 2 answer-part-2
   [:sample3 6]
-  [:input 21165830176709])
+  [:puzzle 21165830176709])

@@ -4,7 +4,12 @@
             [clojure.core.logic.fd :as fd]
             [clojure.string :as string]))
 
-(def input (core/get-input *file*))
+(set! *warn-on-reflection* true)
+
+(core/set-date! 2021 24)
+
+
+;;;; Parse
 
 (defn parse-input [input]
   (map (fn [s]
@@ -14,7 +19,7 @@
             :b  (cond
                   (nil? b)                nil
                   (re-matches #"[w-z]" b) (keyword b)
-                  :else                   (Long/parseLong b))}))
+                  :else                   (parse-long b))}))
        (string/split-lines input)))
 
 (defn translate-sub-instructions [instructions]
@@ -23,11 +28,10 @@
            (and (= op :add) (number? b) (neg? b)) (assoc :op :sub, :b (- b))))
        instructions))
 
-(def parsed-input (translate-sub-instructions (parse-input input)))
+(core/set-parse-fn! (comp translate-sub-instructions parse-input))
 
 
-;;; Part 1
-;;; ============================================================================
+;;;; Part 1
 
 (def input-domain (apply fd/domain (range 1 10)))
 (def register-domain (fd/interval Integer/MAX_VALUE))
@@ -116,13 +120,11 @@
   (first (logic/run 1 [inputs]
            (logic/fresh [suffix end-w end-x end-y]
              (logic/appendo prefix suffix inputs)
-             (logic/trace-lvars "inputs" inputs)
              (execo {:w 0, :x 0, :y 0, :z 0, :inputs inputs}
                     program
                     {:w end-w, :x end-x, :y end-y, :z 0, :inputs ()})))))
 
 (defn find-serial [program largest prefix]
-  (when (zero? (rand-int 100)) (prn prefix))
   (if (= (count prefix) 14)
     prefix
     (->> (cond-> (range 1 10) largest reverse)
@@ -137,17 +139,14 @@
 (defn answer-part-1 [parsed-input]
   (inputs->serial-number (find-serial parsed-input true [])))
 
-(def part-1-answer (answer-part-1 parsed-input))
+(core/set-answer-fn! 1 answer-part-1
+  [:puzzle 99893999291967])
 
-(assert (= part-1-answer 99893999291967))
 
-
-;;; Part 2
-;;; ============================================================================
+;;;; Part 2
 
 (defn answer-part-2 [parsed-input]
   (inputs->serial-number (find-serial parsed-input false [])))
 
-(def part-2-answer (answer-part-2 parsed-input))
-
-(assert (= part-2-answer 34171911181211))
+(core/set-answer-fn! 2 answer-part-2
+  [:puzzle 34171911181211])

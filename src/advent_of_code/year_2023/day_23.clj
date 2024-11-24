@@ -3,11 +3,16 @@
             [clojure.math.combinatorics :as combo]
             [clojure.string :as str]))
 
-(println "# Day 23")
-
 (set! *warn-on-reflection* true)
 
+(core/set-date! 2023 23)
+
+
+;;;; Parse
+
 (defn parse-input [input] (mapv vec (str/split-lines input)))
+
+(core/set-parse-fn! parse-input)
 
 ;;;; Part 1
 
@@ -74,10 +79,9 @@
 (defn answer-part-1 [chart]
   (longest-path (analyze-chart chart next-node)))
 
-(core/part 1
-  parse-input answer-part-1 *file*
+(core/set-answer-fn! 1 answer-part-1
   [:sample1 94]
-  [:input 2414])
+  [:puzzle 2414])
 
 
 ;;;; Part 2
@@ -92,7 +96,6 @@
 (defn answer-part-2 [chart]
   (longest-path (analyze-chart chart next-node2)))
 
-(core/part 2
-  parse-input answer-part-2 *file*
+(core/set-answer-fn! 2 answer-part-2
   [:sample1 154]
-  [:input 6598])
+  [:puzzle 6598])

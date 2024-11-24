@@ -2,18 +2,22 @@
   (:require [advent-of-code.core :as core]
             [clojure.string :as string]))
 
-(def input (core/get-input *file*))
+(set! *warn-on-reflection* true)
+
+(core/set-date! 2020 13)
+
+
+;;;; Parse
 
 (defn parse-input [input]
   (let [[earliest buses] (string/split-lines input)]
-    [(Long/parseLong earliest) (map (some-fn #{"x"} #(Long/parseLong %))
-                                    (string/split buses #","))]))
+    [(parse-long earliest)
+     (map (some-fn #{"x"} parse-long) (string/split buses #","))]))
 
-(def parsed-input (parse-input input))
+(core/set-parse-fn! parse-input)
 
 
-;;; Part 1
-;;; ============================================================================
+;;;; Part 1
 
 (defn answer-part-1 [parsed-input]
   (let [[earliest buses] parsed-input
@@ -33,13 +37,11 @@
                                     buses)]
     (* id (- pick-up earliest))))
 
-(def part-1-answer (answer-part-1 parsed-input))
+(core/set-answer-fn! 1 answer-part-1
+  [:puzzle 4938])
 
-(assert (= part-1-answer 4938))
 
-
-;;; Part 2
-;;; ============================================================================
+;;;; Part 2
 
 (defn answer-part-2 [parsed-input]
   (let [[_ buses] parsed-input]
@@ -55,6 +57,5 @@
           buses)
          1)))
 
-(def part-2-answer (answer-part-2 parsed-input))
-
-(assert (= part-2-answer 230903629977901))
+(core/set-answer-fn! 2 answer-part-2
+  [:puzzle 230903629977901])

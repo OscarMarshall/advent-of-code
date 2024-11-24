@@ -2,11 +2,16 @@
   (:require [advent-of-code.core :as core]
             [clojure.string :as str]))
 
-(println "# Day 13")
-
 (set! *warn-on-reflection* true)
 
+(core/set-date! 2023 13)
+
+
+;;;; Parse
+
 (defn parse-input [input] (map str/split-lines (str/split input #"\n\n")))
+
+(core/set-parse-fn! parse-input)
 
 ;;;; Part 1
 
@@ -23,10 +28,9 @@
 (defn answer-part-1 [patterns]
   (answer patterns find-mirror-value))
 
-(core/part 1
-  parse-input answer-part-1 *file*
+(core/set-answer-fn! 1 answer-part-1
   [:sample1 405]
-  [:input 34821])
+  [:puzzle 34821])
 
 
 ;;;; Part 2
@@ -42,7 +46,6 @@
 
 (defn answer-part-2 [patterns] (answer patterns find-smudged-mirror-value))
 
-(core/part 2
-  parse-input answer-part-2 *file*
+(core/set-answer-fn! 2 answer-part-2
   [:sample1 400]
-  [:input 36919])
+  [:puzzle 36919])

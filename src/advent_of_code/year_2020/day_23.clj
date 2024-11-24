@@ -2,16 +2,19 @@
   (:require [advent-of-code.core :as core]
             [clojure.string :as string]))
 
-(def input (core/get-input *file*))
+(set! *warn-on-reflection* true)
 
-(defn parse-input [input]
-  (mapv (fn [c] (Long/parseLong (str c))) input))
-
-(def parsed-input (parse-input input))
+(core/set-date! 2020 23)
 
 
-;;; Part 1
-;;; ============================================================================
+;;;; Parse
+
+(defn parse-input [input] (mapv (comp parse-long str) input))
+
+(core/set-parse-fn! parse-input)
+
+
+;;;; Part 1
 
 (defn setup-circle [cups]
   [(into {} (map vector cups (rest (cycle cups)))) (first cups)])
@@ -32,19 +35,16 @@
 (defn answer-part-1 [parsed-input]
   (answer-string (nth (iterate move (setup-circle parsed-input)) 100)))
 
-(def part-1-answer (answer-part-1 parsed-input))
+(core/set-answer-fn! 1 answer-part-1
+  [:puzzle "97632548"])
 
-(assert (= part-1-answer "97632548"))
 
-
-;;; Part 2
-;;; ============================================================================
+;;;; Part 2
 
 (defn answer-part-2 [parsed-input]
   (let [cups (into parsed-input (range 10 (inc 1000000)))
         [next-cup] (nth (iterate move (setup-circle cups)) 10000000)]
     (apply * (take 2 (rest (iterate next-cup 1))))))
 
-(def part-2-answer (answer-part-2 parsed-input))
-
-(assert (= part-2-answer 412990492266))
+(core/set-answer-fn! 2 answer-part-2
+  [:puzzle 412990492266])

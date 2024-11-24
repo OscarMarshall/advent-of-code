@@ -6,9 +6,12 @@
             [clojure.string :as str]
             [numeric.expresso.core :as expresso]))
 
-(println "# Day 24")
-
 (set! *warn-on-reflection* true)
+
+(core/set-date! 2023 24)
+
+
+;;;; Parse
 
 (matrix/set-current-implementation :vectorz)
 
@@ -16,6 +19,8 @@
   (map (fn [line]
          (map #(mapv bigint (str/split % #", ")) (str/split line #" @ ")))
        (str/split-lines input)))
+
+(core/set-parse-fn! parse-input)
 
 ;;;; Part 1
 
@@ -38,9 +43,8 @@
 (defn answer-part-1 [hailstones]
   (count (filter hailstone-paths-cross? (combo/combinations hailstones 2))))
 
-(core/part 1
-  parse-input answer-part-1 *file*
-  [:input 12015])
+(core/set-answer-fn! 1 answer-part-1
+  [:puzzle 12015])
 
 
 ;;;; Part 2
@@ -82,8 +86,7 @@
        (apply +')
        long))
 
-(core/part 2
-  parse-input answer-part-2 *file*
-  [:input
+(core/set-answer-fn! 2 answer-part-2
+  [:puzzle
    [> 1016365642179115]
    [= 1016365642179116]])

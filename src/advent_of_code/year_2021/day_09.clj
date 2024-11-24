@@ -2,17 +2,20 @@
   (:require [advent-of-code.core :as core]
             [clojure.string :as string]))
 
-(def input (core/get-input *file*))
+(set! *warn-on-reflection* true)
+
+(core/set-date! 2021 9)
+
+
+;;;; Parse
 
 (defn parse-input [input]
-  (mapv (partial mapv (comp #(Long/parseLong %) str))
-        (string/split-lines input)))
+  (mapv (partial mapv (comp parse-long str)) (string/split-lines input)))
 
-(def parsed-input (parse-input input))
+(core/set-parse-fn! parse-input)
 
 
-;;; Part 1
-;;; ============================================================================
+;;;; Part 1
 
 (defn neighbor-posns [heightmap posn]
   (for [offset [[-1 0] [0 -1] [0 1] [1 0]]
@@ -36,13 +39,11 @@
              +
              (low-points parsed-input)))
 
-(def part-1-answer (answer-part-1 parsed-input))
+(core/set-answer-fn! 1 answer-part-1
+  [:puzzle 550])
 
-(assert (= part-1-answer 550))
 
-
-;;; Part 2
-;;; ============================================================================
+;;;; Part 2
 
 (defn higher-neighbors [heightmap posn]
   (filter (comp (every-pred (complement #{9})
@@ -67,6 +68,5 @@
        (take-last 3)
        (apply *)))
 
-(def part-2-answer (answer-part-2 parsed-input))
-
-(assert (= part-2-answer 1100682))
+(core/set-answer-fn! 2 answer-part-2
+  [:puzzle 1100682])

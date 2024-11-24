@@ -2,7 +2,12 @@
   (:require [advent-of-code.core :as core]
             [clojure.string :as string]))
 
-(def input (core/get-input *file*))
+(set! *warn-on-reflection* true)
+
+(core/set-date! 2021 25)
+
+
+;;;; Parse
 
 (defn parse-input [input]
   (let [lines  (string/split-lines input)
@@ -14,11 +19,10 @@
                                  :when (not= c \.)]
                              [[x y] c]))]))
 
-(def parsed-input (parse-input input))
+(core/set-parse-fn! parse-input)
 
 
-;;; Part 1
-;;; ============================================================================
+;;;; Part 1
 
 (defn step [width height sea-cucumbers]
   (let [sea-cucumbers (reduce (fn [acc [[x y :as posn]]]
@@ -44,6 +48,5 @@
                           (partition 2 1 (iterate (partial step width height)
                                                   sea-cucumbers))))))
 
-(def part-1-answer (answer-part-1 parsed-input))
-
-(assert (= part-1-answer 498))
+(core/set-answer-fn! 1 answer-part-1
+  [:puzzle 498])

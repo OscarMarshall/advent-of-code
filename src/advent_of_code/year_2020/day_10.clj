@@ -2,16 +2,20 @@
   (:require [advent-of-code.core :as core]
             [clojure.string :as string]))
 
-(def input (core/get-input *file*))
+(set! *warn-on-reflection* true)
+
+(core/set-date! 2020 10)
+
+
+;;;; Parse
 
 (defn parse-input [input]
-  (map #(Long/parseLong %) (string/split-lines input)))
+  (map parse-long (string/split-lines input)))
 
-(def parsed-input (parse-input input))
+(core/set-parse-fn! parse-input)
 
 
-;;; Part 1
-;;; ============================================================================
+;;;; Part 1
 
 (defn answer-part-1 [parsed-input]
   (let [joltage-adapters   (sort parsed-input)
@@ -22,13 +26,11 @@
                                              (rest joltage-adapters)))]
     (* ones threes)))
 
-(def part-1-answer (answer-part-1 parsed-input))
+(core/set-answer-fn! 1 answer-part-1
+  [:puzzle 2040])
 
-(assert (= part-1-answer 2040))
 
-
-;;; Part 2
-;;; ============================================================================
+;;;; Part 2
 
 (def count-arrangements
   (memoize
@@ -43,6 +45,5 @@
 (defn answer-part-2 [parsed-input]
   (count-arrangements (sort parsed-input) 0))
 
-(def part-2-answer (answer-part-2 parsed-input))
-
-(assert (= part-2-answer 28346956187648))
+(core/set-answer-fn! 2 answer-part-2
+  [:puzzle 28346956187648])

@@ -1,13 +1,13 @@
 (ns advent-of-code.year-2022.day-19
   (:require [advent-of-code.core :as core]
-            [clojure.edn :as edn]
             [medley.core :as medley]))
 
-(def input (core/get-input *file*))
+(set! *warn-on-reflection* true)
 
-(def sample-input
-  "Blueprint 1: Each ore robot costs 4 ore. Each clay robot costs 2 ore. Each obsidian robot costs 3 ore and 14 clay. Each geode robot costs 2 ore and 7 obsidian.
-Blueprint 2: Each ore robot costs 2 ore. Each clay robot costs 3 ore. Each obsidian robot costs 3 ore and 8 clay. Each geode robot costs 3 ore and 12 obsidian.")
+(core/set-date! 2022 19)
+
+
+;;;; Parse
 
 (def row-re
   #"Blueprint \d+: Each ore robot costs (\d+) ore\. Each clay robot costs (\d+) ore\. Each obsidian robot costs (\d+) ore and (\d+) clay\. Each geode robot costs (\d+) ore and (\d+) obsidian\.")
@@ -20,14 +20,13 @@ Blueprint 2: Each ore robot costs 2 ore. Each clay robot costs 3 ore. Each obsid
    :geode    {:ore geode-robot-ore, :obsidian geode-robot-obsidian}})
 
 (defn parse-input [input]
-  (sequence (map (comp row->recipes (partial map edn/read-string) rest))
+  (sequence (map (comp row->recipes (partial map parse-long) rest))
             (re-seq row-re input)))
 
-(def parsed-input (parse-input input))
+(core/set-parse-fn! parse-input)
 
 
-;;; Part 1
-;;; ============================================================================
+;;;; Part 1
 
 (defn should-build? [{:keys [recipes robots]} robot]
   (or (= robot :geode)
@@ -44,7 +43,7 @@ Blueprint 2: Each ore robot costs 2 ore. Each clay robot costs 3 ore. Each obsid
    (-> state
        (update :inventory
                (partial merge-with +)
-               (medley/map-vals (partial * time) robots))
+               (update-vals robots (partial * time)))
        (update :time-remaining - time))))
 
 (defn can-build-next? [{:as state, :keys [time-remaining]} robot]
@@ -79,7 +78,7 @@ Blueprint 2: Each ore robot costs 2 ore. Each clay robot costs 3 ore. Each obsid
        (get-in (produce state time-remaining) [:inventory :geode])))))
 
 (defn start-state [recipes time]
-  {:inventory      (medley/map-kv (fn [k _] [k 0]) recipes)
+  {:inventory      (update-vals recipes (constantly 0))
    :recipes        recipes
    :robots         {:ore 1}
    :time-remaining time})
@@ -91,19 +90,16 @@ Blueprint 2: Each ore robot costs 2 ore. Each clay robot costs 3 ore. Each obsid
              +
              parsed-input))
 
-(def part-1-answer (answer-part-1 parsed-input))
+(core/set-answer-fn! 1 answer-part-1
+  [:puzzle 1834])
 
-(assert (= part-1-answer 1834))
 
-
-;;; Part 2
-;;; ============================================================================
+;;;; Part 2
 
 (defn answer-part-2 [parsed-input]
   (transduce (map (fn [recipes] (max-geodes (start-state recipes 32))))
              *
              (take 3 parsed-input)))
 
-(def part-2-answer (answer-part-2 parsed-input))
-
-(assert (= part-2-answer 2240))
+(core/set-answer-fn! 2 answer-part-2
+  [:puzzle 2240])

@@ -2,16 +2,19 @@
   (:require [advent-of-code.core :as core]
             [clojure.string :as string]))
 
-(def input (core/get-input *file*))
+(set! *warn-on-reflection* true)
 
-(defn parse-input [input]
-  (map #(Long/parseLong %) (string/split input #",")))
-
-(def parsed-input (parse-input input))
+(core/set-date! 2020 15)
 
 
-;;; Part 1
-;;; ============================================================================
+;;;; Parse
+
+(defn parse-input [input] (map parse-long (string/split input #",")))
+
+(core/set-parse-fn! parse-input)
+
+
+;;;; Part 1
 
 (defn make-sequence [start]
   (letfn [(next-number [prev prev-i state]
@@ -30,17 +33,14 @@
 (defn answer-part-1 [parsed-input]
   (memory-game-nth-number parsed-input 2020))
 
-(def part-1-answer (answer-part-1 parsed-input))
+(core/set-answer-fn! 1 answer-part-1
+  [:puzzle 1085])
 
-(assert (= part-1-answer 1085))
 
-
-;;; Part 2
-;;; ============================================================================
+;;;; Part 2
 
 (defn answer-part-2 [parsed-input]
   (memory-game-nth-number parsed-input 30000000))
 
-(def part-2-answer (answer-part-2 parsed-input))
-
-(assert (= part-2-answer 10652))
+(core/set-answer-fn! 2 answer-part-2
+  [:puzzle 10652])

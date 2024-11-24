@@ -2,19 +2,23 @@
   (:require [advent-of-code.core :as core]
             [clojure.string :as string]))
 
-(def input (core/get-input *file*))
+(set! *warn-on-reflection* true)
+
+(core/set-date! 2020 8)
+
+
+;;;; Parse
 
 (defn parse-input [input]
   (mapv (fn [instruction]
           (let [[op arg] (string/split instruction #" ")]
-            {:op (keyword op), :arg (Long/parseLong arg)}))
+            {:op (keyword op), :arg (parse-long arg)}))
         (string/split-lines input)))
 
-(def parsed-input (parse-input input))
+(core/set-parse-fn! parse-input)
 
 
-;;; Part 1
-;;; ============================================================================
+;;;; Part 1
 
 (defn next-instruction [state] (update state :ip inc))
 
@@ -38,13 +42,11 @@
           [#{} 0]
           (run-prog parsed-input)))
 
-(def part-1-answer (answer-part-1 parsed-input))
+(core/set-answer-fn! 1 answer-part-1
+  [:puzzle 1489])
 
-(assert (= part-1-answer 1489))
 
-
-;;; Part 2
-;;; ============================================================================
+;;;; Part 2
 
 (defn check-solution [prog]
   (reduce (fn [[seen previous-acc] {:keys [acc ip]}]
@@ -64,6 +66,5 @@
               false)))
         (range (count parsed-input))))
 
-(def part-2-answer (answer-part-2 parsed-input))
-
-(assert (= part-2-answer 1539))
+(core/set-answer-fn! 2 answer-part-2
+  [:puzzle 1539])

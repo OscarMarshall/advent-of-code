@@ -1,24 +1,25 @@
 (ns advent-of-code.year-2022.day-22
   (:require [advent-of-code.core :as core]
-            [clojure.edn :as edn]
             [clojure.string :as string]
             [medley.core :as medley]))
 
 (set! *warn-on-reflection* true)
 
-(def input (core/get-input *file*))
+(core/set-date! 2022 22)
+
+
+;;;; Parse
 
 (defn parse-input [input]
   (let [[board path] (string/split input #"\n\n")]
     {:board (string/split-lines board)
-     :path (map (fn [s] (or ({"R" :right, "L" :left} s) (edn/read-string s)))
+     :path (map (fn [s] (or ({"R" :right, "L" :left} s) (parse-long s)))
                 (re-seq #"\d+|[RL]" path))}))
 
-(def parsed-input (parse-input input))
+(core/set-parse-fn! parse-input)
 
 
-;;; Part 1
-;;; ============================================================================
+;;;; Part 1
 
 (def direction->delta {0 [0 1], 1 [1 0], 2 [0 -1], 3 [-1 0]})
 
@@ -62,13 +63,11 @@
 
 (def answer-part-1 (partial answer wrap-step))
 
-(def part-1-answer (answer-part-1 parsed-input))
+(core/set-answer-fn! 1 answer-part-1
+  [:puzzle 181128])
 
-(assert (= part-1-answer 181128))
 
-
-;;; Part 2
-;;; ============================================================================
+;;;; Part 2
 
 (def cube-face-starts [[0 50] [0 100] [50 50] [100 0] [100 50] [150 0]])
 
@@ -126,6 +125,5 @@
 
 (defn answer-part-2 [state] (answer cube-step state))
 
-(def part-2-answer (answer-part-2 parsed-input))
-
-(assert (= part-2-answer 52311))
+(core/set-answer-fn! 2 answer-part-2
+  [:puzzle 52311])

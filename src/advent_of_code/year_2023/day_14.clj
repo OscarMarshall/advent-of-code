@@ -3,11 +3,16 @@
             [clojure.string :as str]
             [medley.core :as medley]))
 
-(println "# Day 14")
-
 (set! *warn-on-reflection* true)
 
+(core/set-date! 2023 14)
+
+
+;;;; Parse
+
 (defn parse-input [input] (str/split-lines input))
+
+(core/set-parse-fn! parse-input)
 
 ;;;; Part 1
 
@@ -30,10 +35,9 @@
 (defn answer-part-1 [grid]
   (total-load (rotate-grid-cw (tilt-grid-left (rotate-grid-cw grid 3)) 1)))
 
-(core/part 1
-  parse-input answer-part-1 *file*
+(core/set-answer-fn! 1 answer-part-1
   [:sample1 136]
-  [:input 112048])
+  [:puzzle 112048])
 
 
 ;;;; Part 2
@@ -56,7 +60,6 @@
         (recur grids (long (rem spins (- previous-spins spins))) {})
         (recur remaining-grids (dec spins) (assoc seen grid spins))))))
 
-(core/part 2
-  parse-input answer-part-2 *file*
+(core/set-answer-fn! 2 answer-part-2
   [:sample1 64]
-  [:input 105606])
+  [:puzzle 105606])

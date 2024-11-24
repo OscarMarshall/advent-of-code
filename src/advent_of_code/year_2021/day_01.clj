@@ -2,30 +2,31 @@
   (:require [advent-of-code.core :as core]
             [clojure.string :as string]))
 
-(def input (core/get-input *file*))
+(set! *warn-on-reflection* true)
 
-(defn parse-input [input] (map #(Long/parseLong %) (string/split-lines input)))
-
-(def parsed-input (parse-input input))
+(core/set-date! 2021 1)
 
 
-;;; Part 1
-;;; ============================================================================
+;;;; Parse
+
+(defn parse-input [input] (map parse-long (string/split-lines input)))
+
+(core/set-parse-fn! parse-input)
+
+
+;;;; Part 1
 
 (defn answer-part-1 [parsed-input]
   (count (filter (partial apply <) (partition 2 1 parsed-input))))
 
-(def part-1-answer (answer-part-1 parsed-input))
+(core/set-answer-fn! 1 answer-part-1
+  [:puzzle 1400])
 
-(assert (= part-1-answer 1400))
 
-
-;;; Part 2
-;;; ============================================================================
+;;;; Part 2
 
 (defn answer-part-2 [parsed-input]
   (answer-part-1 (map (partial apply +) (partition 3 1 parsed-input))))
 
-(def part-2-answer (answer-part-2 parsed-input))
-
-(assert (= part-2-answer 1429))
+(core/set-answer-fn! 2 answer-part-2
+  [:puzzle 1429])

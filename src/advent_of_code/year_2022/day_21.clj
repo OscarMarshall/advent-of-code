@@ -2,12 +2,16 @@
   (:require [advent-of-code.core :as core]
             [clojure.core.logic :as logic]
             [clojure.core.logic.fd :as fd]
-            [clojure.edn :as edn]
             [medley.core :as medley]))
 
-(def input (core/get-input *file*))
+(set! *warn-on-reflection* true)
 
-(defn number-monkey [s] {:type :number, :value (edn/read-string s)})
+(core/set-date! 2022 21)
+
+
+;;;; Parse
+
+(defn number-monkey [s] {:type :number, :value (parse-long s)})
 
 (defn operation-monkey [[_ left operation right]]
   {:type      :operation
@@ -25,11 +29,10 @@
        (into {} (map (fn [[_ monkey-id value]]
                        [(keyword monkey-id) (make-monkey value)])))))
 
-(def parsed-input (parse-input input))
+(core/set-parse-fn! parse-input)
 
 
-;;; Part 1
-;;; ============================================================================
+;;;; Part 1
 
 (def operation->goal {:+ fd/+, :- fd/-, :* fd/*, :/ fd/quot})
 
@@ -62,15 +65,11 @@
              (relate-subtree monkeys :root)
              (logic/== out (get-in monkeys [:root :lvar]))))))
 
-(def part-1-answer (answer-part-1 parsed-input))
-
-(assert (= part-1-answer 21120928600114))
-
-(< 21120928600114 (quot Long/MAX_VALUE 4))
+(core/set-answer-fn! 1 answer-part-1
+  [:puzzle 21120928600114])
 
 
-;;; Part 2
-;;; ============================================================================
+;;;; Part 2
 
 (defn answer-part-2 [parsed-input]
   (let [monkeys
@@ -84,6 +83,5 @@
              (relate-subtree monkeys :root)
              (logic/== out (get-in monkeys [:humn :lvar]))))))
 
-(def part-2-answer (answer-part-2 parsed-input))
-
-(assert (= part-2-answer 3453748220116))
+(core/set-answer-fn! 2 answer-part-2
+  [:puzzle 3453748220116])

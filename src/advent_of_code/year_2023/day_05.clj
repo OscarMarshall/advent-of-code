@@ -3,9 +3,12 @@
             [clojure.string :as str]
             [medley.core :as medley]))
 
-(println "# Day 5")
-
 (set! *warn-on-reflection* true)
+
+(core/set-date! 2023 5)
+
+
+;;;; Parse
 
 (defn parse-conversion-map [s]
   (map #(mapv parse-long (str/split % #" ")) (rest (str/split-lines s))))
@@ -15,6 +18,8 @@
         seeds                  (map parse-long (re-seq #"\d+" seeds-str))]
     {:seeds           seeds
      :conversion-maps (map parse-conversion-map map-strs)}))
+
+(core/set-parse-fn! parse-input)
 
 
 ;;;; Part 1
@@ -29,10 +34,9 @@
 (defn answer-part-1 [{:keys [seeds conversion-maps]}]
   (transduce (map #(reduce convert % conversion-maps)) min ##Inf seeds))
 
-(core/part 1
-  parse-input answer-part-1 *file*
+(core/set-answer-fn! 1 answer-part-1
   [:sample1 35]
-  [:input [> 2036236] 177942185])
+  [:puzzle [> 2036236] 177942185])
 
 
 ;;;; Part 2
@@ -69,7 +73,6 @@
        (apply medley/least)
        first))
 
-(core/part 2
-  parse-input answer-part-2 *file*
+(core/set-answer-fn! 2 answer-part-2
   [:sample1 46]
-  [:input [> 59390325 69841803]])
+  [:puzzle [> 59390325 69841803]])

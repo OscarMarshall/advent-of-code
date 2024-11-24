@@ -1,9 +1,14 @@
 (ns advent-of-code.year-2021.day-08
   (:require [advent-of-code.core :as core]
-            [clojure.string :as string]
-            [clojure.set :as set]))
+            [clojure.set :as set]
+            [clojure.string :as string]))
 
-(def input (core/get-input *file*))
+(set! *warn-on-reflection* true)
+
+(core/set-date! 2021 8)
+
+
+;;;; Parse
 
 (defn parse-signal-patterns [signal-patterns]
   (map (partial into #{}) (string/split signal-patterns #" ")))
@@ -15,24 +20,21 @@
            {:examples examples, :output output}))
        (string/split-lines input)))
 
-(def parsed-input (parse-input input))
+(core/set-parse-fn! parse-input)
 
 
-;;; Part 1
-;;; ============================================================================
+;;;; Part 1
 
 (defn answer-part-1 [parsed-input]
   (count (into ()
                (comp (mapcat :output) (map count) (filter #{2 3 4 7}))
                parsed-input)))
 
-(def part-1-answer (answer-part-1 parsed-input))
+(core/set-answer-fn! 1 answer-part-1
+                     [:puzzle 342])
 
-(assert (= part-1-answer 342))
 
-
-;;; Part 2
-;;; ============================================================================
+;;;; Part 2
 
 (def number->segments
   {0 #{\a \b \c \e \f \g}
@@ -79,6 +81,5 @@
 (defn answer-part-2 [parsed-input]
   (transduce (map decode-display) + parsed-input))
 
-(def part-2-answer (answer-part-2 parsed-input))
-
-(assert (= part-2-answer 1068933))
+(core/set-answer-fn! 2 answer-part-2
+                     [:puzzle 1068933])

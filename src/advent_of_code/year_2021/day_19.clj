@@ -1,9 +1,14 @@
 (ns advent-of-code.year-2021.day-19
   (:require [advent-of-code.core :as core]
-            [clojure.string :as string])
-  (:import (clojure.lang PersistentQueue)))
+            [clojure.string :as string]
+            [medley.core :as medley]))
 
-(def input (core/get-input *file*))
+(set! *warn-on-reflection* true)
+
+(core/set-date! 2021 19)
+
+
+;;;; Parse
 
 (defn parse-input [input]
   (sequence (comp (remove #{""})
@@ -12,15 +17,14 @@
                   (map (partial
                         into
                         #{}
-                        (map (comp (partial mapv #(Long/parseLong %))
+                        (map (comp (partial mapv parse-long)
                                    #(string/split % #","))))))
             (string/split-lines input)))
 
-(def parsed-input (parse-input input))
+(core/set-parse-fn! parse-input)
 
 
-;;; Part 1
-;;; ============================================================================
+;;;; Part 1
 
 (defn rotate-posn-x [[x y z]] [x z (- y)])
 (defn rotate-posn-y [[x y z]] [(- z) y x])
@@ -115,11 +119,10 @@
 (def combine-reports
   (memoize
    (fn [[report0 & reports]]
-     (loop [reports  (into PersistentQueue/EMPTY reports)
+     (loop [reports  (into (medley/queue) reports)
             groups   (into {} (group-beacons report0))
             scanners #{[0 0 0]}
             beacons  report0]
-       (println (count reports))
        (if (empty? reports)
          {:scanners scanners, :beacons beacons}
          (let [report  (peek reports)
@@ -154,21 +157,18 @@
 (defn answer-part-1 [parsed-input]
   (count (:beacons (combine-reports parsed-input))))
 
-(def part-1-answer (answer-part-1 parsed-input))
+(core/set-answer-fn! 1 answer-part-1
+  [:puzzle 372])
 
-(assert (= part-1-answer 372))
 
-
-;;; Part 2
-;;; ============================================================================
+;;;; Part 2
 
 (defn answer-part-2 [parsed-input]
   (let [{:keys [scanners]} (combine-reports parsed-input)]
     (reduce max
             (for [[a & bs] (take-while some? (iterate next scanners))
                   b        bs]
-              (apply + (map (comp #(Math/abs %) -) a b))))))
+              (apply + (map (comp abs -) a b))))))
 
-(def part-2-answer (answer-part-2 parsed-input))
-
-(assert (= part-2-answer 12241))
+(core/set-answer-fn! 2 answer-part-2
+  [:puzzle 12241])

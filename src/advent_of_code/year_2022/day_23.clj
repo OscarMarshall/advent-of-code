@@ -4,7 +4,12 @@
             [clojure.string :as string]
             [medley.core :as medley]))
 
-(def input (core/get-input *file*))
+(set! *warn-on-reflection* true)
+
+(core/set-date! 2022 23)
+
+
+;;;; Parse
 
 (defn parse-input [input]
   (let [lines (string/split-lines input)]
@@ -14,11 +19,10 @@
                     :when  (= (get-in lines position) \#)]
                 position))))
 
-(def parsed-input (parse-input input))
+(core/set-parse-fn! parse-input)
 
 
-;;; Part 1
-;;; ============================================================================
+;;;; Part 1
 
 (defn elf-window [[row column] elves]
   (mapv (fn [row]
@@ -88,18 +92,15 @@
                   [first second])
        (count elves))))
 
-(def part-1-answer (answer-part-1 parsed-input))
+(core/set-answer-fn! 1 answer-part-1
+  [:puzzle 4049])
 
-(assert (= part-1-answer 4049))
 
-
-;;; Part 2
-;;; ============================================================================
+;;;; Part 2
 
 (defn answer-part-2 [elves]
   (count (medley/take-upto (partial apply =)
                            (partition 2 1 (map first (rounds elves))))))
 
-(def part-2-answer (answer-part-2 parsed-input))
-
-(assert (= part-2-answer 1021))
+(core/set-answer-fn! 2 answer-part-2
+  [:puzzle 1021])

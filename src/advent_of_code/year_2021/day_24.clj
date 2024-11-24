@@ -2,7 +2,12 @@
   (:require [advent-of-code.core :as core]
             [clojure.string :as string]))
 
-(def input (core/get-input *file*))
+(set! *warn-on-reflection* true)
+
+(core/set-date! 2021 24)
+
+
+;;;; Parse
 
 (defn parse-input [input]
   (map (fn [s]
@@ -12,14 +17,13 @@
             :b  (cond
                   (nil? b)                nil
                   (re-matches #"[w-z]" b) (keyword b)
-                  :else                   (Long/parseLong b))}))
+                  :else                   (parse-long b))}))
        (string/split-lines input)))
 
-(def parsed-input (parse-input input))
+(core/set-parse-fn! parse-input)
 
 
-;;; Part 1
-;;; ============================================================================
+;;;; Part 1
 
 (defmulti execute-instruction (fn [_ {:keys [op]}] op))
 (defmethod execute-instruction :inp [{:as state, :keys [input]} {:keys [a]}]
@@ -66,14 +70,13 @@
   (:z (reduce execute-instruction
               {:input (concat (map (juxt identity identity) input)
                               (repeat [1 9]))
-               :w [0 0]
-               :x [0 0]
-               :y [0 0]
-               :z [0 0]}
+               :w     [0 0]
+               :x     [0 0]
+               :y     [0 0]
+               :z     [0 0]}
               instructions)))
 
 (defn find-serial [program largest prefix]
-  (when (zero? (rand-int 1000)) (prn prefix))
   (if (= (count prefix) 14)
     prefix
     (->> (cond-> (range 1 10) largest reverse)
@@ -89,17 +92,14 @@
 (defn answer-part-1 [parsed-input]
   (input->serial-number (find-serial parsed-input true [])))
 
-(def part-1-answer (time (answer-part-1 parsed-input)))
+(core/set-answer-fn! 1 answer-part-1
+  [:puzzle 99893999291967])
 
-(assert (= part-1-answer 99893999291967))
 
-
-;;; Part 2
-;;; ============================================================================
+;;;; Part 2
 
 (defn answer-part-2 [parsed-input]
   (input->serial-number (find-serial parsed-input false [])))
 
-(def part-2-answer (answer-part-2 parsed-input))
-
-(assert (= part-2-answer 34171911181211))
+(core/set-answer-fn! 2 answer-part-2
+  [:puzzle 34171911181211])

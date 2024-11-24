@@ -2,7 +2,12 @@
   (:require [advent-of-code.core :as core]
             [clojure.string :as string]))
 
-(def input (core/get-input *file*))
+(set! *warn-on-reflection* true)
+
+(core/set-date! 2020 19)
+
+
+;;;; Parse
 
 (defn empty-matcher [] {:type :empty-matcher})
 (defn empty-matcher? [x] (boolean (some-> x :type (= :empty-matcher))))
@@ -16,24 +21,23 @@
   (condp re-matches definition
     #"\"(.)\""      :>> (fn [[_ character]] (char-matcher (first character)))
     #"\d+(?: \d+)*" :>> (fn [xs]
-                          (apply cat-matcher (map #(Long/parseLong %)
+                          (apply cat-matcher (map parse-long
                                                   (string/split xs #" "))))
     #"(.*) \| (.*)" :>> (fn [[_ & a+b]]
                           (apply or-matcher (map make-matcher a+b)))))
 (defn parse-input [input]
   (let [[rules messages] (map string/split-lines (string/split input #"\n\n"))]
     {:rules    (into {}
-                     (map (comp (juxt (comp #(Long/parseLong %) first)
+                     (map (comp (juxt (comp parse-long first)
                                       (comp make-matcher second))
                                 #(string/split % #": ")))
                      rules)
      :messages messages}))
 
-(def parsed-input (parse-input input))
+(core/set-parse-fn! parse-input)
 
 
-;;; Part 1
-;;; ============================================================================
+;;;; Part 1
 
 (defn matched? [{:keys [type value]}]
   (case type
@@ -108,13 +112,11 @@
                            matched?)))
          count)))
 
-(def part-1-answer (answer-part-1 parsed-input))
+(core/set-answer-fn! 1 answer-part-1
+  [:puzzle 147])
 
-(assert (= part-1-answer 147))
 
-
-;;; Part 2
-;;; ============================================================================
+;;;; Part 2
 
 (defn answer-part-2 [parsed-input]
   (-> parsed-input
@@ -122,6 +124,5 @@
       (assoc-in [:rules 11] (make-matcher "42 31 | 42 11 31"))
       answer-part-1))
 
-(def part-2-answer (answer-part-2 parsed-input))
-
-(assert (= part-2-answer 263))
+(core/set-answer-fn! 2 answer-part-2
+  [:puzzle 263])

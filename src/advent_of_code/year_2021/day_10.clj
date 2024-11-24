@@ -2,15 +2,19 @@
   (:require [advent-of-code.core :as core]
             [clojure.string :as string]))
 
-(def input (core/get-input *file*))
+(set! *warn-on-reflection* true)
+
+(core/set-date! 2021 10)
+
+
+;;;; Parse
 
 (defn parse-input [input] (string/split-lines input))
 
-(def parsed-input (parse-input input))
+(core/set-parse-fn! parse-input)
 
 
-;;; Part 1
-;;; ============================================================================
+;;;; Part 1
 
 (def open->close {\( \), \[ \], \{ \}, \< \>})
 
@@ -32,13 +36,11 @@
              +
              parsed-input))
 
-(def part-1-answer (answer-part-1 parsed-input))
+(core/set-answer-fn! 1 answer-part-1
+  [:puzzle 319233])
 
-(assert (= part-1-answer 319233))
 
-
-;;; Part 2
-;;; ============================================================================
+;;;; Part 2
 
 (def close-points {\) 1, \] 2, \} 3, \> 4})
 
@@ -55,6 +57,5 @@
                                         parsed-input))]
     (nth processed-lines (quot (count processed-lines) 2))))
 
-(def part-2-answer (answer-part-2 parsed-input))
-
-(assert (= part-2-answer 1118976874))
+(core/set-answer-fn! 2 answer-part-2
+  [:puzzle 1118976874])

@@ -2,17 +2,20 @@
   (:require [advent-of-code.core :as core]
             [clojure.string :as string]))
 
-(def input (core/get-input *file*))
+(set! *warn-on-reflection* true)
+
+(core/set-date! 2021 15)
+
+
+;;;; Parse
 
 (defn parse-input [input]
-  (mapv (partial mapv (fn [c] (Long/parseLong (str c))))
-        (string/split-lines input)))
+  (mapv (partial mapv (comp parse-long str)) (string/split-lines input)))
 
-(def parsed-input (parse-input input))
+(core/set-parse-fn! parse-input)
 
 
-;;; Part 1
-;;; ============================================================================
+;;;; Part 1
 
 (defn neighbors [risk-level-grid posn]
   (eduction (map (partial mapv + posn))
@@ -40,13 +43,11 @@
                      [0 0]
                      (vec (repeat 2 (dec (count parsed-input))))))
 
-(def part-1-answer (answer-part-1 parsed-input))
+(core/set-answer-fn! 1 answer-part-1
+  [:puzzle 472])
 
-(assert (= part-1-answer 472))
 
-
-;;; Part 2
-;;; ============================================================================
+;;;; Part 2
 
 (def succ (zipmap (range 1 10) (rest (cycle (range 1 10)))))
 
@@ -62,6 +63,5 @@
                      [0 0]
                      (vec (repeat 2 (dec (* (count parsed-input) 5))))))
 
-(def part-2-answer (answer-part-2 parsed-input))
-
-(assert (= part-2-answer 2851))
+(core/set-answer-fn! 2 answer-part-2
+  [:puzzle 2851])

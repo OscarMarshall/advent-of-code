@@ -3,11 +3,16 @@
             [clojure.math.combinatorics :as combo]
             [clojure.string :as str]))
 
-(println "# Day 11")
-
 (set! *warn-on-reflection* true)
 
+(core/set-date! 2023 11)
+
+
+;;;; Parse
+
 (defn parse-input [input] (mapv vec (str/split-lines input)))
+
+(core/set-parse-fn! parse-input)
 
 ;;;; Part 1
 
@@ -49,10 +54,9 @@
 (defn answer-part-1 [image]
   (sum-all-distances (expand-galaxies (image->galaxies image) 2)))
 
-(core/part 1
-  parse-input answer-part-1 *file*
+(core/set-answer-fn! 1 answer-part-1
   [:sample1 374]
-  [:input 9681886])
+  [:puzzle 9681886])
 
 
 ;;;; Part 2
@@ -60,7 +64,6 @@
 (defn answer-part-2 [image]
   (sum-all-distances (expand-galaxies (image->galaxies image) 1000000)))
 
-(core/part 2
-  parse-input answer-part-2 *file*
+(core/set-answer-fn! 2 answer-part-2
   [:sample1 82000210]
-  [:input 791134099634])
+  [:puzzle 791134099634])

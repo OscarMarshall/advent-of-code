@@ -2,7 +2,12 @@
   (:require [advent-of-code.core :as core]
             [clojure.string :as string]))
 
-(def input (core/get-input *file*))
+(set! *warn-on-reflection* true)
+
+(core/set-date! 2021 16)
+
+
+;;;; Parse
 
 (def hex->binary-sequence
   {\0 '(0 0 0 0)
@@ -24,11 +29,10 @@
 
 (defn parse-input [input] (mapcat hex->binary-sequence (string/trim input)))
 
-(def parsed-input (parse-input input))
+(core/set-parse-fn! parse-input)
 
 
-;;; Part 1
-;;; ============================================================================
+;;;; Part 1
 
 (defn binary-sequence->long [binary-sequence]
   (reduce (fn [acc x] (+ (bit-shift-left acc 1) x)) 0 binary-sequence))
@@ -82,13 +86,11 @@
 (defn answer-part-1 [parsed-input]
   (sum-of-version-numbers (first (parse-packet parsed-input))))
 
-(def part-1-answer (answer-part-1 parsed-input))
+(core/set-answer-fn! 1 answer-part-1
+  [:puzzle 893])
 
-(assert (= part-1-answer 893))
 
-
-;;; Part 2
-;;; ============================================================================
+;;;; Part 2
 
 (defn comparison [f]
   (fn [x y] (if (f x y) 1 0)))
@@ -96,7 +98,7 @@
 (defn evaluate-packet [{:keys [type body]}]
   (if (= type 4)
     body
-    (apply (case type
+    (apply (case (int type)
              0 +
              1 *
              2 min
@@ -109,6 +111,5 @@
 (defn answer-part-2 [parsed-input]
   (evaluate-packet (first (parse-packet parsed-input))))
 
-(def part-2-answer (answer-part-2 parsed-input))
-
-(assert (= part-2-answer 4358595186090))
+(core/set-answer-fn! 2 answer-part-2
+  [:puzzle 4358595186090])

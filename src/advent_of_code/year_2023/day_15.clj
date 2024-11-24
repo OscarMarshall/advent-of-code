@@ -4,11 +4,16 @@
             [medley.core :as medley])
   (:import (java.util List)))
 
-(println "# Day 15")
-
 (set! *warn-on-reflection* true)
 
+(core/set-date! 2023 15)
+
+
+;;;; Parse
+
 (defn parse-input [input] (str/split (str/replace input "\n" "") #","))
+
+(core/set-parse-fn! parse-input)
 
 ;;;; Part 1
 
@@ -24,10 +29,9 @@
              +
              instructions))
 
-(core/part 1
-  parse-input answer-part-1 *file*
+(core/set-answer-fn! 1 answer-part-1
   [:sample1 1320]
-  [:input [not= 517847] 517965])
+  [:puzzle [not= 517847] 517965])
 
 
 ;;;; Part 2
@@ -65,7 +69,6 @@
 (defn answer-part-2 [instructions]
   (calculate-total-focusing-power (reduce perform-step {} instructions)))
 
-(core/part 2
-  parse-input answer-part-2 *file*
+(core/set-answer-fn! 2 answer-part-2
   [:sample1 145]
-  [:input 267372])
+  [:puzzle 267372])

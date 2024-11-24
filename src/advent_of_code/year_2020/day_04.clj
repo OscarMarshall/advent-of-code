@@ -3,7 +3,12 @@
             [clojure.set :as set]
             [clojure.string :as string]))
 
-(def input (core/get-input *file*))
+(set! *warn-on-reflection* true)
+
+(core/set-date! 2020 4)
+
+
+;;;; Parse
 
 (defn parse-input [input]
   (map (fn [passport]
@@ -12,11 +17,10 @@
                (string/split passport #"[ \n]")))
        (string/split input #"\n\n")))
 
-(def parsed-input (parse-input input))
+(core/set-parse-fn! parse-input)
 
 
-;;; Part 1
-;;; ============================================================================
+;;;; Part 1
 
 (def required-fields #{"byr" "iyr" "eyr" "hgt" "hcl" "ecl" "pid"})
 
@@ -24,24 +28,22 @@
   (count (filter #(set/superset? (into #{} (keys %)) required-fields)
                  parsed-input)))
 
-(def part-1-answer (answer-part-1 parsed-input))
+(core/set-answer-fn! 1 answer-part-1
+  [:puzzle 264])
 
-(assert (= part-1-answer 264))
 
-
-;;; Part 2
-;;; ============================================================================
+;;;; Part 2
 
 (defn year-validator [minimum maximum]
   #(when-let [year (re-matches #"\d{4}" %)]
-     (<= minimum (Long/parseLong year) maximum)))
+     (<= minimum (parse-long year) maximum)))
 
 (def validators
   {"byr" (year-validator 1920 2020)
    "iyr" (year-validator 2010 2020)
    "eyr" (year-validator 2020 2030)
    "hgt" #(when-let [[_ x units] (re-matches #"(\d+)(cm|in)" %)]
-            (let [x (Long/parseLong x)]
+            (let [x (parse-long x)]
               (case units
                 "cm" (<= 150 x 193)
                 "in" (<= 59 x 76))))
@@ -56,6 +58,5 @@
                            validators))
                  parsed-input)))
 
-(def part-2-answer (answer-part-2 parsed-input))
-
-(assert (= part-2-answer 224))
+(core/set-answer-fn! 2 answer-part-2
+  [:puzzle 224])

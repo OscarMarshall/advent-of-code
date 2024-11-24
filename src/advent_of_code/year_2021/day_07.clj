@@ -2,23 +2,27 @@
   (:require [advent-of-code.core :as core]
             [clojure.string :as string]))
 
-(def input (core/get-input *file*))
+(set! *warn-on-reflection* true)
+
+(core/set-date! 2021 7)
+
+
+;;;; Parse
 
 (defn parse-input [input]
-  (map #(Long/parseLong %) (string/split (string/trim input) #",")))
+  (map parse-long (string/split (string/trim input) #",")))
 
-(def parsed-input (parse-input input))
+(core/set-parse-fn! parse-input)
 
 
-;;; Part 1
-;;; ============================================================================
+;;;; Part 1
 
 (def seen-values (atom (sorted-set)))
 
 (defn fuel-needed-fn [fuel-calculation positions]
   (fn [target]
     (swap! seen-values conj target)
-    (transduce (map (comp fuel-calculation #(Math/abs %) (partial - target)))
+    (transduce (map (comp fuel-calculation abs (partial - target)))
                +
                positions)))
 
@@ -39,19 +43,16 @@
                 (apply max parsed-input)
                 (fuel-needed-fn identity parsed-input)))
 
-(def part-1-answer (answer-part-1 parsed-input))
+(core/set-answer-fn! 1 answer-part-1
+  [:puzzle 337488])
 
-(assert (= part-1-answer 337488))
 
-
-;;; Part 2
-;;; ============================================================================
+;;;; Part 2
 
 (defn answer-part-2 [parsed-input]
   (optimal-fuel (apply min parsed-input)
                 (apply max parsed-input)
                 (fuel-needed-fn (fn [x] (/ (* x (+ x 1)) 2)) parsed-input)))
 
-(def part-2-answer (answer-part-2 parsed-input))
-
-(assert (= part-2-answer 89647695))
+(core/set-answer-fn! 2 answer-part-2
+  [:puzzle 89647695])

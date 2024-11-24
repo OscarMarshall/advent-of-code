@@ -3,15 +3,19 @@
             [clojure.string :as string]
             [medley.core :as medley]))
 
-(def input (core/get-input *file*))
+(set! *warn-on-reflection* true)
+
+(core/set-date! 2022 25)
+
+
+;;;; Parse
 
 (defn parse-input [input] (string/split-lines input))
 
-(def parsed-input (parse-input input))
+(core/set-parse-fn! parse-input)
 
 
-;;; Part 1
-;;; ============================================================================
+;;;; Part 1
 
 (defn snafu->decimal [s]
   (apply + (map *
@@ -40,6 +44,5 @@
 (defn answer-part-1 [parsed-input]
   (decimal->snafu (transduce (map snafu->decimal) + parsed-input)))
 
-(def part-1-answer (answer-part-1 parsed-input))
-
-(assert (= part-1-answer "2-2--02=1---1200=0-1"))
+(core/set-answer-fn! 1 answer-part-1
+  [:puzzle "2-2--02=1---1200=0-1"])

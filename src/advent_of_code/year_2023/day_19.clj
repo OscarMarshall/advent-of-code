@@ -2,9 +2,12 @@
   (:require [advent-of-code.core :as core]
             [clojure.string :as str]))
 
-(println "# Day 19")
-
 (set! *warn-on-reflection* true)
+
+(core/set-date! 2023 19)
+
+
+;;;; Parse
 
 (defn parse-rule [rule]
   (condp re-matches rule
@@ -28,6 +31,8 @@
     {:workflows (into {} (map parse-workflow) (str/split-lines workflows))
      :parts     (map parse-part (str/split-lines parts))}))
 
+(core/set-parse-fn! parse-input)
+
 ;;;; Part 1
 
 (def op->fn {:< <, :> >})
@@ -46,10 +51,9 @@
 (defn answer-part-1 [{:keys [workflows parts]}]
   (transduce (comp (filter #(accepted? % workflows)) (mapcat vals)) + parts))
 
-(core/part 1
-  parse-input answer-part-1 *file*
+(core/set-answer-fn! 1 answer-part-1
   [:sample1 19114]
-  [:input 425811])
+  [:puzzle 425811])
 
 
 ;;;; Part 2
@@ -113,7 +117,6 @@
 (defn answer-part-2 [{:keys [workflows]}]
   (combinations workflows))
 
-(core/part 2
-  parse-input answer-part-2 *file*
+(core/set-answer-fn! 2 answer-part-2
   [:sample1 167409079868000]
-  [:input 131796824371749])
+  [:puzzle 131796824371749])

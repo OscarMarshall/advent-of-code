@@ -2,20 +2,20 @@
   (:require [advent-of-code.core :as core]
             [clojure.string :as string]))
 
-(def input (core/get-input *file*))
+(set! *warn-on-reflection* true)
+
+(core/set-date! 2020 16)
+
+
+;;;; Parse
 
 (defn parse-field [line]
   (let [[_ name a1 z1 a2 z2] (re-matches #"(.+): (\d+)-(\d+) or (\d+)-(\d+)"
                                          line)
-        [a1 z1 a2 z2]        (map #(Long/parseLong %) [a1 z1 a2 z2])]
+        [a1 z1 a2 z2]        (map parse-long [a1 z1 a2 z2])]
     [name (fn [x] (or (<= a1 x z1) (<= a2 x z2)))]))
 
-(defn parse-ticket [line]
-  (map #(Long/parseLong %) (string/split line #",")))
-
-
-;;; Part 1
-;;; ============================================================================
+(defn parse-ticket [line] (map parse-long (string/split line #",")))
 
 (defn parse-input [input]
   (let [[fields my-ticket nearby-tickets] (string/split input #"\n\n")]
@@ -26,7 +26,10 @@
                           rest
                           (map parse-ticket))}))
 
-(def parsed-input (parse-input input))
+(core/set-parse-fn! parse-input)
+
+
+;;;; Part 1
 
 (defn answer-part-1 [parsed-input]
   (let [{:keys [fields nearby-tickets]} parsed-input]
@@ -34,13 +37,11 @@
                +
                (flatten nearby-tickets))))
 
-(def part-1-answer (answer-part-1 parsed-input))
+(core/set-answer-fn! 1 answer-part-1
+  [:puzzle 25059])
 
-(assert (= part-1-answer 25059))
 
-
-;;; Part 2
-;;; ============================================================================
+;;;; Part 2
 
 (def determine-fields
   (memoize
@@ -76,6 +77,5 @@
                *
                (zipmap field-order my-ticket))))
 
-(def part-2-answer (answer-part-2 parsed-input))
-
-(assert (= part-2-answer 3253972369789))
+(core/set-answer-fn! 2 answer-part-2
+  [:puzzle 3253972369789])

@@ -2,23 +2,27 @@
   (:require [advent-of-code.core :as core]
             [clojure.string :as string]))
 
-(def input (core/get-input *file*))
+(set! *warn-on-reflection* true)
+
+(core/set-date! 2021 5)
+
+
+;;;; Parse
 
 (defn parse-input [input]
   (map (fn [line]
          (->> line
               (re-matches #"(\d+),(\d+) -> (\d+),(\d+)")
               rest
-              (map #(Long/parseLong %))
+              (map parse-long)
               (partition 2)
               vec))
        (string/split-lines input)))
 
-(def parsed-input (parse-input input))
+(core/set-parse-fn! parse-input)
 
 
-;;; Part 1
-;;; ============================================================================
+;;;; Part 1
 
 (defn line->points [[[x1 y1] [x2 y2]]]
   (into #{[x2 y2]}
@@ -43,16 +47,13 @@
        (filter (comp (partial some true?) (partial apply map =)))
        number-of-overlapping-points))
 
-(def part-1-answer (answer-part-1 parsed-input))
+(core/set-answer-fn! 1 answer-part-1
+  [:puzzle 4728])
 
-(assert (= part-1-answer 4728))
 
-
-;;; Part 2
-;;; ============================================================================
+;;;; Part 2
 
 (defn answer-part-2 [parsed-input] (number-of-overlapping-points parsed-input))
 
-(def part-2-answer (answer-part-2 parsed-input))
-
-(assert (= part-2-answer 17717))
+(core/set-answer-fn! 2 answer-part-2
+  [:puzzle 17717])
