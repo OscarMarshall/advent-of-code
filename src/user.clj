@@ -22,7 +22,7 @@
 
 (defn init-day! [year day]
   (when (.mkdirs (File. (format "src/advent_of_code/year_%d/" year)))
-    (printf "Welcome to Advent of Code %d!%n"))
+    (printf "Welcome to Advent of Code %d!%n" year))
   (spit (code-file-name year day) (code-file-string year day)))
 
 (defn init-today! []
