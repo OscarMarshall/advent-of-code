@@ -19,8 +19,8 @@
   x)
 
 #_(core/set-answer-fn! 1 answer-part-1
-    [:puzzle #_(get-in core/state [:outputs :puzzle])]
-    #_(user/add-sample! ""))
+    #_(user/add-sample! "")
+    [:puzzle #_(get-in @core/state [:part1 :outputs :puzzle :result])])
 
 
 ;;;; Part 2
@@ -29,5 +29,5 @@
   x)
 
 #_(core/set-answer-fn! 2 answer-part-2
-    [:puzzle #_(get-in core/state [:outputs :puzzle])]
-    #_(user/add-sample! ""))
+    #_(user/add-sample! "")
+    [:puzzle #_(get-in core/state [:part2 :outputs :puzzle :result])])
