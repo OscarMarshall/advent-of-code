@@ -4,7 +4,7 @@
 
 (set! *warn-on-reflection* true)
 
-(core/set-date! 2021 06)
+(core/set-date! 2021 6)
 
 
 ;;;; Parse

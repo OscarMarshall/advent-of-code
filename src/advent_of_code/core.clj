@@ -3,6 +3,7 @@
             [clojure.java.io :as io]
             [clojure.string :as string]
             [clojure.test :as test]
+            [clojure.walk :as walk]
             [hickory.convert :refer [hickory-to-hiccup]]
             [hickory.core :as hickory]
             [hickory.select :as select]
@@ -84,11 +85,14 @@
                  (render-part-section state part-key))))
         [1 2]))
 
-(defn- render-report [{:as state, :keys [title year]}]
+(defn- day-url [year day]
+  (format "https://adventofcode.com/%d/day/%d" year day))
+
+(defn- render-report [{:as state, :keys [day title year]}]
   ^{:portal.viewer/default :portal.viewer/hiccup}
   [:main
    [:h1 (str "Advent of Code " year)]
-   [:h2 (hickory-to-hiccup title)]
+   [:h2 [:a {:href (day-url year day)} (hickory-to-hiccup title)]]
    (render-input-sections state)
    (render-part-sections state)])
 
@@ -102,11 +106,21 @@
   (when-not @session-cookie
     (throw (Exception. "Session cookie isn't set"))))
 
-(defn- day-url [year day]
-  (format "https://adventofcode.com/%d/day/%d" year day))
-
 (defn- headers []
   {"Cookie" (str "session=" @session-cookie)})
+
+(def html-entities
+  {"&amp;"  "&"
+   "&gt;"   ">"
+   "&lt;"   "<"
+   "&quot;" "\""})
+
+(defn- unescape-hiccup [x]
+  (walk/postwalk (fn [x]
+                   (cond-> x
+                     (string? x) (string/replace #"&[a-zA-Z]+;"
+                                                 #(get html-entities % %))))
+                 x))
 
 (defn- fetch-day-description [year day]
   (let [html         (:body @(http/get (day-url year day) {:headers (headers)}))
@@ -116,7 +130,9 @@
                          (get-in [0 :content 0 :content 0])
                          (->> (re-matches #"--- (.*) ---"))
                          (nth 1))]
-    (cons title (map (comp hickory-to-hiccup #(update % :content subvec 1))
+    (cons title (map (comp unescape-hiccup
+                           hickory-to-hiccup
+                           #(update % :content subvec 1))
                      descriptions))))
 
 (defn- fetch-puzzle-input! [year day]
