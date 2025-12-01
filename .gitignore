@@ -1,5 +1,6 @@
 .DS_Store
-/.clj-kondo/.cache/
+/.clj-kondo
 /.cpcache
+/.lsp
 /.nrepl-port
 /.portal

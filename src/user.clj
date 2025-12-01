@@ -31,7 +31,7 @@
 
 (defn init-tomorrow! []
   (let [date (LocalDate/now (ZoneId/of "America/New_York"))]
-    (init-day! (.getYear date) (inc (.getDayOfMonth date)))))
+    (init-day! (.getYear date) (.getDayOfMonth (.plusDays date 1)))))
 
 (defn add-sample! [s]
   (let [{:keys [year day]} @core/state

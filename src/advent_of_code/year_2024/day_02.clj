@@ -1,7 +1,9 @@
 (ns advent-of-code.year-2024.day-02
   (:require [advent-of-code.core :as core]
             [clojure.string :as string]
-            [medley.core :as medley]))
+            [medley.core :as medley]
+            [clojure.core.logic :as logic]
+            [clojure.core.logic.fd :as fd]))
 
 (set! *warn-on-reflection* true)
 
@@ -33,10 +35,53 @@
 
 ;;;; Part 2
 
+(logic/defne safe-reporto [xs safe]
+  ([[] true])
+  ([[_] true])
+  ([[x y . more] _]
+   (logic/fresh [z xxs]
+     (logic/everyg #(fd/in % (fd/interval 99)) [x y z])
+     (logic/conde
+       [(fd/- y x z)
+        (fd/<= 1 z)
+        (fd/<= z 3)
+        (logic/conso y more xxs)
+        (safe-reporto xxs safe)]
+       [(logic/conde
+          [(fd/> x y)]
+          [(fd/== x y)]
+          [(fd/- y x z)
+           (fd/> z 3)])
+        (logic/== safe false)]))))
+
+(logic/defne safe-report-dampenedo [xs safe]
+  ([[] true])
+  ([[_] true])
+  ([[x y . more] _]
+   (logic/fresh [z xxs]
+     (logic/everyg #(fd/in % (fd/interval 99)) [x y z])
+     (logic/conde
+       [(fd/- y x z)
+        (fd/<= 1 z)
+        (fd/<= z 3)
+        (logic/conso y more xxs)
+        (safe-report-dampenedo xxs safe)]
+       [(logic/conso y more xxs)
+        (safe-reporto xxs safe)]
+       [(logic/conso x more xxs)
+        (safe-reporto xxs safe)]))))
+
+(comment
+  (some identity (logic/run* [x] (safe-report-dampenedo [1 5] x)))
+  )
+
 (defn problem-dampened-safe-report? [report]
-  (some safe-report?
+  #_(some safe-report?
         (cons report
-              (map #(medley/remove-nth % report) (range (count report))))))
+              (map #(medley/remove-nth % report) (range (count report)))))
+  (or (some identity (logic/run* [x] (safe-report-dampenedo report x)))
+      (some identity (logic/run* [x]
+                       (safe-report-dampenedo (reverse report) x)))))
 
 (defn answer-part-2 [reports]
   (count (filter problem-dampened-safe-report? reports)))
