@@ -16,7 +16,7 @@
 (def se [1 1])
 (def nw [-1 -1])
 (def sw [-1 1])
-(def box [n e s w ne se nw sw])
+(def box (conj cardinals ne se nw sw))
 
 (defn parse [input legend]
   (let [lines  (string/split-lines input)
@@ -46,6 +46,8 @@
                            (range height)))))
 
 (defn neighbors [coordinates] (map (partial mapv + coordinates) cardinals))
+
+(defn adjacents [coordinates] (map (partial mapv + coordinates) box))
 
 (defn manhattan-distance [[ax ay] [bx by]] (+ (abs (- ax bx)) (abs (- ay by))))
 
